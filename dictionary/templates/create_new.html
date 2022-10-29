@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+{% block title %}Карточки{% endblock title %}
+{% block header %}Карточки{% endblock header %}
+{% block content %}
+{% load crispy_forms_tags %}
+
+<div>
+
+
+    <div class="control-me">
+        <h5 style="text-align: center;">Добавление новой карточки</h5>
+        <form action="/add_new_card" method="post">
+            {% csrf_token %}
+            {{ form | crispy }}
+            <input type="submit" value="Submit">
+        </form>
+    </div>
+</div>
+
+
+
+{% endblock content %}
