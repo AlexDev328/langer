@@ -1,6 +1,6 @@
 import django_filters
 
-from dictionary.models import WordCard, Language
+from app.dictionary.models import WordCard, Language
 
 
 class WordCardFilter(django_filters.FilterSet):

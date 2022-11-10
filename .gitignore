@@ -1,4 +1,7 @@
 venv
-db.sqlite3
+app/db.sqlite3
 .idea
-static
+staticfiles
+.env.dev
+.env.prod
+.env.prod.db

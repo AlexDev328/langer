@@ -1,8 +1,13 @@
+import random
+
 from django.contrib.auth.models import User
 from django.db import models
 
 
 # Create your models here.
+from django.db.models import Q
+
+
 class Language(models.Model):
     name = models.CharField('Название', max_length=50)
     flag_code = models.CharField('Код', max_length=2, null=True)
@@ -27,6 +32,22 @@ class Word(models.Model):
         verbose_name_plural = 'cлова'
 
 
+class ManagerWordCard(models.Manager):
+    def get_random_words(self, user_id, language_id: Language, except_id, count: int):
+        condition = (Q(owner_id=user_id) | Q(is_public=True)) & Q(word__language_id=language_id) & ~Q(id=except_id)
+        query = super(models.Manager, self).get_queryset().filter((Q(owner_id=user_id) | Q(is_public=True)) & Q(word__language_id=language_id) & ~Q(id=except_id)).order_by('id')
+        card_count = query.count()
+        print(query)
+        if card_count <= count:
+            return query.all()
+        random_indexes = random.sample(range(0, card_count), k=count)
+        random_words = [query[random_int] for random_int in random_indexes]
+
+        random_words = random.choices(query, k=count)
+
+        return random_words
+
+
 class WordCard(models.Model):
     word = models.ForeignKey(Word, on_delete=models.CASCADE, verbose_name='слово или фраза', related_name='word_cards')
     translation = models.ForeignKey(Word, on_delete=models.CASCADE, verbose_name='перевод', related_name='translation_cards')
@@ -36,6 +57,8 @@ class WordCard(models.Model):
     example = models.CharField("пример использования", max_length=300, null=True, blank=True)
     owner = models.ForeignKey(User, on_delete=models.CASCADE, null=True, verbose_name='создатель')
     is_public = models.BooleanField('доступна всем', default=True)
+
+    objects = ManagerWordCard()
 
     def __str__(self):
         return f'{str(self.word)} - {str(self.translation)}'

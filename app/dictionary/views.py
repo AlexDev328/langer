@@ -92,7 +92,7 @@ def start_training(request) -> list[Task]:
 
 def prepare_task(card: WordCard, user) -> Task:
     answers = [AnswerOption(card.translation, True)]
-    random_words = get_random_words(user, card.translation.language, card.translation.id, 3)
+    random_words = WordCard.objects.get_random_words(user, card.translation.language, card.translation.id, 3)
     for word in random_words:
         answer = AnswerOption(word, False)
         answers.append(answer)
@@ -102,7 +102,7 @@ def prepare_task(card: WordCard, user) -> Task:
 #todo: should be atomic
 #todo: make model manager and add WordCard.visible = WordCard.objects.filter(Q(user=user) | Q(is_public=True))
 def get_random_words(user, language: Language, except_id, count: int):
-    condition = (Q(user=user) | Q(is_public=True)) & Q(language=language) & Q(id=except_id, _negated=True)
+    condition = (Q(user=user) | Q(is_public=True)) & Q(language=language) & ~Q(id=except_id)
     query = WordCard.objects.filter(condition)
     card_count = query.count()
     if card_count <= count:
