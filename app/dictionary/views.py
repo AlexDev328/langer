@@ -43,15 +43,19 @@ def create_new_wordcard(request):
             print(form.cleaned_data)
             data = form.cleaned_data
             word, _ = Word.objects.get_or_create(text=data['text'], language=data['text_language'])
-            translation, _ = Word.objects.get_or_create(text=data['translation'], language=data['translation_language'])
+            if data['translation'] and data['translation_language']:
+                translation, _ = Word.objects.get_or_create(
+                    text=data['translation'],
+                    language=data['translation_language']
+                )
 
-            wordcard, _ = WordCard.objects.get_or_create(word=word, translation=translation,
-                                                         description=data['description'], example=data['example'],
-                                                         is_public=data['is_public'], owner=request.user)
+                wordcard, _ = WordCard.objects.get_or_create(word=word, translation=translation,
+                                                             description=data['description'], example=data['example'],
+                                                             is_public=data['is_public'], owner=request.user)
 
             if data['group']:
                 wordcard.cardgroup_set.add(data['group'])
-            return HttpResponseRedirect('/mycardstest/')
+            return HttpResponseRedirect('/mycards/')
 
     # if a GET (or any other method) we'll create a blank form
     else:

@@ -17,8 +17,8 @@
     <div class="pagination">
         <span class="step-links">
             {% if cards.has_previous %}
-                <a href="?{% add_or_replace page=1 %}?"> first</a>
-                <a href="?{% add_or_replace page=cards.previous_page_number %}?">previous</a>
+                <a href="?{% add_or_replace page=1 %}"> first</a>
+                <a href="?{% add_or_replace page=cards.previous_page_number %}">previous</a>
             {% endif %}
 
             <span class="current">
@@ -27,7 +27,7 @@
 
             {% if cards.has_next %}
                 <a href="?{% add_or_replace page=cards.next_page_number%}">next</a>
-                <a href="?{% add_or_replace page=cards.num_pages %}">last &raquo;</a>
+                <a href="?{% add_or_replace page=cards.paginator.num_pages %}">last &raquo;</a>
             {% endif %}
         </span>
     </div>

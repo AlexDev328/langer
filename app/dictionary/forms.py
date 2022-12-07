@@ -21,7 +21,7 @@ class WordCardCreate(forms.Form):
     description = forms.CharField(label='значение', max_length=150, required=False)
     example = forms.CharField(label="пример использования", max_length=300, required=False)
     group = forms.ModelChoiceField(CardGroup.objects.all(), required=False)
-    is_public = forms.BooleanField(label='доступна всем', initial=True)
+    is_public = forms.BooleanField(label='доступна всем', initial=True, required=False)
 
 
 class TrainingSettings(forms.Form):
