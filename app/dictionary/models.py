@@ -3,7 +3,6 @@ import random
 from django.contrib.auth.models import User
 from django.db import models
 
-
 # Create your models here.
 from django.db.models import Q
 
@@ -33,15 +32,11 @@ class Word(models.Model):
 
 
 class ManagerWordCard(models.Manager):
-    def get_random_words(self, user_id, language_id: Language, except_id, count: int):
+    def get_random_words(self, user_id, language_id: Language, except_id=None, count: int = 2):
         condition = (Q(owner_id=user_id) | Q(is_public=True)) & Q(word__language_id=language_id) & ~Q(id=except_id)
-        query = super(models.Manager, self).get_queryset().filter((Q(owner_id=user_id) | Q(is_public=True)) & Q(word__language_id=language_id) & ~Q(id=except_id)).order_by('id')
-        card_count = query.count()
-        print(query)
-        if card_count <= count:
-            return query.all()
-        random_indexes = random.sample(range(0, card_count), k=count)
-        random_words = [query[random_int] for random_int in random_indexes]
+        query = super(models.Manager, self).get_queryset().filter(
+            (Q(owner_id=user_id) | Q(is_public=True)) & Q(word__language_id=language_id) & ~Q(id=except_id)).order_by(
+            'id')
 
         random_words = random.choices(query, k=count)
 
@@ -50,7 +45,8 @@ class ManagerWordCard(models.Manager):
 
 class WordCard(models.Model):
     word = models.ForeignKey(Word, on_delete=models.CASCADE, verbose_name='слово или фраза', related_name='word_cards')
-    translation = models.ForeignKey(Word, on_delete=models.CASCADE, verbose_name='перевод', related_name='translation_cards')
+    translation = models.ForeignKey(Word, on_delete=models.CASCADE, verbose_name='перевод',
+                                    related_name='translation_cards')
     # объяснение перевода слова
     description = models.CharField('значение', max_length=300, null=True, blank=True)
     # примеры использования

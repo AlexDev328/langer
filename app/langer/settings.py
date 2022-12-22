@@ -22,7 +22,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = "django-insecure-(*c$9_r29_kqb)y_smxb1=93$bfm=&8_ev+svb=uucyxxh2yss"
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = ['*', "[::1]:1337"]
 
@@ -43,8 +43,13 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-    "dictionary",
+    "rest_framework",
+    'rest_framework_simplejwt',
     "crispy_forms",
+    'django_filters',
+    #local
+    "dictionary",
+
 ]
 
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
@@ -61,6 +66,15 @@ MIDDLEWARE = [
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
+
+REST_FRAMEWORK = {
+    'DEFAULT_FILTER_BACKENDS': ['django_filters.rest_framework.DjangoFilterBackend'],
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ],
+}
+
+
 
 ROOT_URLCONF = "langer.urls"
 
