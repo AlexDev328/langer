@@ -5,3 +5,5 @@ staticfiles
 .env.dev
 .env.prod
 .env.prod.db
+
+*__pycache__*

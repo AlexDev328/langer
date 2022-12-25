@@ -24,12 +24,13 @@ SECRET_KEY = "django-insecure-(*c$9_r29_kqb)y_smxb1=93$bfm=&8_ev+svb=uucyxxh2yss
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['*', "[::1]:1337"]
+ALLOWED_HOSTS = ['*', "[::1]:1337","192.168.50.165:8000"]
 
-CSRF_TRUSTED_ORIGINS = ["http://localhost:8000", "http://localhost:1337",    "http://*",]
+CSRF_TRUSTED_ORIGINS = ["http://localhost:8000", "http://localhost:1337",    "http://192.168.50.165:8000",]
 CORS_ALLOWED_ORIGINS = [
-    "*",
-    "[::1]:1337"
+    "http://*",
+    "http://[::1]:1337",
+    "http://192.168.50.165:8000"
 ]
 
 CORS_ALLOW_ALL_ORIGINS = True
@@ -43,6 +44,7 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "corsheaders",
     "rest_framework",
     'rest_framework_simplejwt',
     "crispy_forms",
