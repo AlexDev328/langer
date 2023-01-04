@@ -11,14 +11,21 @@ class LanguageSerializer(serializers.ModelSerializer):
 
 class WordSerializer(serializers.ModelSerializer):
     language = LanguageSerializer()
+
+    class Meta:
+        model = Word
+        fields = '__all__'
+
+
+class WordSerializerS(serializers.ModelSerializer):
     class Meta:
         model = Word
         fields = '__all__'
 
 
 class WordCardSerializer(serializers.ModelSerializer):
-    word = WordSerializer()
-    translation = WordSerializer()
+    word = WordSerializerS()
+    translation = WordSerializerS()
 
     def create(self, validated_data):
         print(validated_data)
@@ -27,7 +34,8 @@ class WordCardSerializer(serializers.ModelSerializer):
         word, _ = Word.objects.get_or_create(**word_data)
         translition, _ = Word.objects.get_or_create(**transation_data)
         return WordCard.objects.create(word=word,
-                                       translation=translition, owner=self.context.get('request').user, **validated_data)
+                                       translation=translition, owner=self.context.get('request').user,
+                                       **validated_data)
 
     class Meta:
         model = WordCard

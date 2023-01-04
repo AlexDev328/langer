@@ -33,10 +33,7 @@ class WordCardApiView(generics.ListCreateAPIView):
         return WordCard.objects.all()
 
 
-class WordCardsTrainingSerializer(Serializer):
-    #TODO написать сериализатор на новый объект (слово, и 4 варианта ответа, и правильный ответ)
-    wordcard = WordCardSerializer()
-    options = WordCardSerializer(many=True, read_only=True)
+
 
 
 class WordCardsTrainingApiView(generics.RetrieveUpdateAPIView):
