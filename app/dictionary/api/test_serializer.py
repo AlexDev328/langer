@@ -6,13 +6,13 @@ from rest_framework import serializers
 
 
 class WordCardTestSerializer(Serializer):
-    text = serializers.CharField(source='word__text', default='Не сработало(')
+    text = serializers.CharField(source='word.text')
     description = serializers.CharField(required=False, allow_null=True)
     example = serializers.CharField(required=False, allow_null=True)
-
+    translation = serializers.CharField(source='translation.text')
 
 class OptionTestSerializer(Serializer):
-    text = serializers.CharField()
+    text = serializers.CharField(source='translation.text')
 
 
 class WordCardsTrainingSerializer(Serializer):

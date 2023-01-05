@@ -10,6 +10,7 @@ from django.db.models import Q
 class Language(models.Model):
     name = models.CharField('Название', max_length=50)
     flag_code = models.CharField('Код', max_length=2, null=True)
+    emoji = models.CharField('Эмоджи (для фронта)', max_length=1, null=True, blank=True)
 
     def __str__(self):
         return self.name
@@ -51,7 +52,7 @@ class WordCard(models.Model):
     description = models.CharField('значение', max_length=300, null=True, blank=True)
     # примеры использования
     example = models.CharField("пример использования", max_length=300, null=True, blank=True)
-    owner = models.ForeignKey(User, on_delete=models.CASCADE, null=True, verbose_name='создатель')
+    owner = models.ForeignKey('UserProfile', on_delete=models.CASCADE, null=True, verbose_name='создатель')
     is_public = models.BooleanField('доступна всем', default=True)
 
     objects = ManagerWordCard()
@@ -79,7 +80,7 @@ class CardGroup(models.Model):
 
 
 class WordCardProgress(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name='пользователь')
+    user = models.ForeignKey('UserProfile', on_delete=models.CASCADE, verbose_name='пользователь', null=True)
     card = models.ForeignKey(WordCard, on_delete=models.CASCADE, verbose_name='карточка')
     score = models.FloatField('процент правильных ответов [0..1]', default=0)
     count = models.IntegerField('количество тренировок', default=0)
@@ -90,3 +91,11 @@ class WordCardProgress(models.Model):
     class Meta:
         verbose_name = 'Прогресс'
         verbose_name_plural = 'Прогрессы'
+
+
+class UserProfile(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    default_language = models.ForeignKey(Language, on_delete=models.DO_NOTHING, null=True, blank=True)
+
+
+

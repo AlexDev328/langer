@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Word, WordCard, WordCardProgress, Language, CardGroup
+from .models import Word, WordCard, WordCardProgress, Language, CardGroup, UserProfile
 
 # Register your models here.
 
@@ -7,7 +7,7 @@ from .models import Word, WordCard, WordCardProgress, Language, CardGroup
 admin.site.register(Word)
 admin.site.register(WordCard)
 admin.site.register(Language)
-
+admin.site.register(UserProfile)
 
 @admin.register(CardGroup)
 class CardGroupAdmin(admin.ModelAdmin):
