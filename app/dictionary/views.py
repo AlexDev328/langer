@@ -14,7 +14,7 @@ import random
 @login_required
 def mycards(request):
     filter_bar = FilterBard()
-    query = Q(owner=request.user) | Q(is_public=True)
+    query = Q(owner=request.user.userprofile) | Q(is_public=True)
 
     if language := request.GET.get('text_language'):
         filter_bar.initial['text_language'] = language
@@ -51,7 +51,7 @@ def create_new_wordcard(request):
 
                 wordcard, _ = WordCard.objects.get_or_create(word=word, translation=translation,
                                                              description=data['description'], example=data['example'],
-                                                             is_public=data['is_public'], owner=request.user)
+                                                             is_public=data['is_public'], owner=request.user.userprofile)
 
             if data['group']:
                 wordcard.cardgroup_set.add(data['group'])
