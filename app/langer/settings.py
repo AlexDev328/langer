@@ -19,19 +19,18 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/
 
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "django-insecure-(*c$9_r29_kqb)y_smxb1=93$bfm=&8_ev+svb=uucyxxh2yss"
 
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+CSRF_TRUSTED_ORIGINS = os.environ.get("DJANGO_ALLOWED_HOSTS", default='localhost 127.0.0.1').split(" ")
 
-ALLOWED_HOSTS = ['*', "[::1]:1337","192.168.50.165:8000"]
+SECRET_KEY = os.environ.get("SECRET_KEY", default='somerandomkey')
 
-CSRF_TRUSTED_ORIGINS = ["http://localhost:8000", "http://localhost:1337",    "http://192.168.50.165:8000",]
+DEBUG = int(os.environ.get("DEBUG", default=True))
+
+ALLOWED_HOSTS = os.environ.get("DJANGO_ALLOWED_HOSTS", default='localhost 127.0.0.1').split(" ")
+
 CORS_ALLOWED_ORIGINS = [
-    "http://*",
-    "http://[::1]:1337",
-    "http://192.168.50.165:8000"
+    "http://localhost:8000",
+    "http://localhost:3000",
 ]
 
 CORS_ALLOW_ALL_ORIGINS = True
@@ -50,7 +49,7 @@ INSTALLED_APPS = [
     'rest_framework_simplejwt',
     "crispy_forms",
     'django_filters',
-    #local
+    # local
     "dictionary",
 
 ]
@@ -77,8 +76,6 @@ REST_FRAMEWORK = {
     ],
     'ACCESS_TOKEN_LIFETIME': timedelta(hours=5),
 }
-
-
 
 ROOT_URLCONF = "langer.urls"
 
@@ -152,14 +149,11 @@ STATICFILES_DIRS = [
 
 ]
 
-
-STATIC_URL = "/static/"
+STATIC_URL = "/django_static/"
 STATIC_ROOT = BASE_DIR / "staticfiles"
 
 MEDIA_URL = "/media/"
 MEDIA_ROOT = BASE_DIR / "mediafiles"
-
-
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field

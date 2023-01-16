@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from dictionary.models import Language, WordCard, CardGroup, WordCardProgress, Word
+from dictionary.models import Language, WordCard, CardGroup, WordCardProgress, Word, UserProfile
 
 
 class LanguageSerializer(serializers.ModelSerializer):
@@ -42,6 +42,17 @@ class WordCardSerializer(serializers.ModelSerializer):
         exclude = ('owner',)
 
 
+class WordCardSerializerDetail(WordCardSerializer):
+    score = serializers.SerializerMethodField()
+
+    def get_score(self, obj):
+        profile = self.context.get('userprofile')
+        try:
+            return WordCardProgress.objects.get(user_id=profile.id, card=obj).score
+        except WordCardProgress.DoesNotExist:
+            return 0
+
+
 class CardGroupSerializer(serializers.ModelSerializer):
     class Meta:
         model = CardGroup
@@ -52,3 +63,9 @@ class WordCardProgressSerializer(serializers.ModelSerializer):
     class Meta:
         model = WordCardProgress
         fields = '__all__'
+
+
+class UserProfileSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = UserProfile
+        fields = ('user', 'default_language')
