@@ -23,9 +23,33 @@ class WordSerializerS(serializers.ModelSerializer):
         fields = '__all__'
 
 
+class WordSerializerInternal(serializers.ModelSerializer):
+    language = serializers.IntegerField(source='language_id')
+
+    class Meta:
+        model = Word
+        fields = ('text', 'language')
+
+    def create(self, validated_data):
+        language_data = validated_data.pop('language')
+        l_serializer = LanguageSerializer(data=language_data)
+        if l_serializer.is_valid(raise_exception=True):
+            language = l_serializer.save()
+        instance = self.save(language=language)
+        return instance
+
+    def update(self, instance, validated_data):
+        language_data = validated_data.pop('language')
+        l_serializer = LanguageSerializer(instance.language, language_data)
+        if l_serializer.is_valid(raise_exception=True):
+            language = l_serializer.save()
+        instance = self.save(language=language)
+        return instance
+
+
 class WordCardSerializer(serializers.ModelSerializer):
-    word = WordSerializerS()
-    translation = WordSerializerS()
+    word = WordSerializerInternal()
+    translation = WordSerializerInternal()
 
     def create(self, validated_data):
         print(validated_data)
@@ -34,8 +58,25 @@ class WordCardSerializer(serializers.ModelSerializer):
         word, _ = Word.objects.get_or_create(**word_data)
         translition, _ = Word.objects.get_or_create(**transation_data)
         return WordCard.objects.create(word=word,
-                                       translation=translition, owner=self.context.get('request').user,
+                                       translation=translition, owner=self.context.get('userprofile'),
                                        **validated_data)
+
+    def update(self, instance: WordCard, validated_data):
+        print(validated_data)
+        word_data = validated_data.pop('word')
+        # word_data['language_id'] = word_data.pop('language')
+        transation_data = validated_data.pop('translation')
+        # transation_data['language_id'] = transation_data.pop('language')
+        updated_word = WordSerializerInternal(instance=instance.word, data=word_data)
+        if updated_word.is_valid():
+            updated_word.save()
+        print(updated_word.errors)
+        updated_translition = WordSerializerInternal(instance=instance.translation, data=transation_data)
+        if updated_translition.is_valid(raise_exception=True):
+            updated_translition.save()
+        for attr, value in validated_data.items():
+            setattr(instance, attr, value)
+        return instance
 
     class Meta:
         model = WordCard
@@ -43,7 +84,7 @@ class WordCardSerializer(serializers.ModelSerializer):
 
 
 class WordCardSerializerDetail(WordCardSerializer):
-    score = serializers.SerializerMethodField()
+    score = serializers.SerializerMethodField(read_only=True)
 
     def get_score(self, obj):
         profile = self.context.get('userprofile')
