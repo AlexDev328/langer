@@ -3,6 +3,7 @@ from rest_framework import generics, status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.serializers import BaseSerializer, Serializer
+from rest_framework.views import APIView
 
 from dictionary.api.serializers import LanguageSerializer, WordSerializer, WordCardSerializer, UserProfileSerializer, \
     WordCardSerializerDetail
@@ -56,6 +57,12 @@ class WordCardApiDetailView(generics.RetrieveUpdateDestroyAPIView):
         context.update({"userprofile": self.request.user.userprofile})
         return context
 
+    '''def get_serializer_class(self):
+        if self.request.method == "GET":
+            return WordCardSerializerDetail
+        else:
+            return WordCardSerializer'''
+
     def get_queryset(self):
         return WordCard.objects.all()
 
@@ -78,6 +85,24 @@ class WordCardProgressApi(generics.CreateAPIView):
             progress.score -= 1
         progress.save()
         return Response(status=status.HTTP_201_CREATED)
+
+
+class TrainingCheckApiView(generics.GenericAPIView):
+    def post(self, request, *args, **kwargs):
+        print(request)
+        try:
+            progress, _ = WordCardProgress.objects.get_or_create(user=self.request.user.userprofile,
+                                                                 card_id=kwargs['pk'])
+        except Exception as e:
+            print(e)
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
+        if request.data['answer'] == WordCard.objects.get(id=kwargs['pk']).translation.text:
+            progress.score += 1
+            progress.save()
+            return Response(status=status.HTTP_200_OK, data={'right_answer': WordCard.objects.get(id=kwargs['pk']).translation.text,'correct': True})
+        return Response(status=status.HTTP_200_OK,
+                        data={'right_answer': WordCard.objects.get(id=kwargs['pk']).translation.text, 'correct': False})
 
 
 class WordCardsTrainingApiView(generics.RetrieveUpdateAPIView):

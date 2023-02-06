@@ -20,7 +20,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/
 
 
-CSRF_TRUSTED_ORIGINS = os.environ.get("DJANGO_ALLOWED_HOSTS", default='localhost 127.0.0.1').split(" ")
+CSRF_TRUSTED_ORIGINS = ["http://2.59.41.105", ]#os.environ.get("DJANGO_ALLOWED_HOSTS", default='localhost 127.0.0.1').split(" ")
 
 SECRET_KEY = os.environ.get("SECRET_KEY", default='somerandomkey')
 
@@ -160,5 +160,5 @@ MEDIA_ROOT = BASE_DIR / "mediafiles"
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
-LOGIN_REDIRECT_URL = "/"
-LOGIN_URL = 'login/'
+LOGIN_REDIRECT_URL = "/api/app"
+LOGIN_URL = 'api/app/login/'

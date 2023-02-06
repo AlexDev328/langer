@@ -8,7 +8,7 @@ from django.db.models import Q
 class Language(models.Model):
     name = models.CharField('Название', max_length=50)
     flag_code = models.CharField('Код', max_length=2, null=True)
-    emoji = models.CharField('Эмоджи (для фронта)', max_length=1, null=True, blank=True)
+    emoji = models.CharField('Эмоджи (для фронта)', max_length=3, null=True, blank=True)
 
     def __str__(self):
         return self.name
