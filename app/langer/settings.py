@@ -29,7 +29,7 @@ DEBUG = int(os.environ.get("DEBUG", default=True))
 ALLOWED_HOSTS = os.environ.get("DJANGO_ALLOWED_HOSTS", default='localhost 127.0.0.1').split(" ")
 
 CORS_ALLOWED_ORIGINS = [
-    "http://localhost:8000",
+    "http://langer.1164993-aidev.tw1.ru",
     "http://localhost:3000",
 ]
 
