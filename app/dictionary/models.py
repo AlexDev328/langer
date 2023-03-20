@@ -20,6 +20,7 @@ class Language(models.Model):
 
 class Word(models.Model):
     text = models.CharField('Слово или фраза', max_length=150)
+    transcription = models.CharField('транскрипция', max_length=150, null=True, blank=True)
     language = models.ForeignKey(Language, on_delete=models.CASCADE, verbose_name='язык')
 
     def __str__(self):
@@ -31,7 +32,7 @@ class Word(models.Model):
 
 
 class ManagerWordCard(models.Manager):
-    def get_random_words(self, user_id, language_id: Language, except_id=None, count: int = 2):
+    def get_random_words(self, user_id, language_id: Language, except_id=None, count: int = 2) -> list['WordCard']:
         condition = (Q(owner_id=user_id) | Q(is_public=True)) & Q(word__language_id=language_id) & ~Q(id=except_id)
         query = super(models.Manager, self).get_queryset().filter(
             (Q(owner_id=user_id) | Q(is_public=True)) & Q(word__language_id=language_id) & ~Q(id=except_id)).order_by(
