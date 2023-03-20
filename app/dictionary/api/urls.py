@@ -1,7 +1,7 @@
 from django.urls import path
 
-from .views import LanguageApiView, WordApiView, WordCardApiView, WordCardsTrainingApiView, UserProfileAPI, \
-    WordCardApiDetailView, WordCardProgressApi, TrainingCheckApiView
+from .views import LanguageApiView, WordApiView, WordCardApiView, UserProfileAPI, \
+    WordCardApiDetailView
 from rest_framework_simplejwt.views import (
     TokenObtainPairView,
     TokenRefreshView,
@@ -14,7 +14,5 @@ urlpatterns = [
     path("words", WordApiView.as_view(), name="words"),
     path("wordcards", WordCardApiView.as_view(), name="words"),
     path("wordcards/<int:pk>", WordCardApiDetailView.as_view(), name="words"),
-    path("trainings/simple", WordCardsTrainingApiView.as_view(), name='simple training'),
-    path("trainings/simple/correct/<int:pk>", TrainingCheckApiView.as_view(), name='training_results'),
     path("profile/me", UserProfileAPI.as_view(), name='user profile')
 ]

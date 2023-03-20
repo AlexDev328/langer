@@ -19,3 +19,4 @@ class WordCardsTrainingSerializer(Serializer):
     wordcard = WordCardTestSerializer(read_only=True)
     options = serializers.ListSerializer(child=serializers.CharField())#serializers.CharField(many=True)#OptionTestSerializer(many=True, read_only=True)
 
+

@@ -50,7 +50,8 @@ INSTALLED_APPS = [
     "crispy_forms",
     'django_filters',
     # local
-    "dictionary",
+    "dictionary.apps.DictionaryConfig",
+    'trainings.apps.TrainingsConfig',
 
 ]
 
@@ -63,7 +64,7 @@ MIDDLEWARE = [
     "corsheaders.middleware.CorsMiddleware",
     "django.middleware.common.CommonMiddleware",
 
-    # "django.middleware.csrf.CsrfViewMiddleware",
+    "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
@@ -145,7 +146,7 @@ USE_TZ = True
 
 
 STATICFILES_DIRS = [
-    BASE_DIR / "mystatic"
+    BASE_DIR /"mystatic"
 
 ]
 
@@ -160,5 +161,5 @@ MEDIA_ROOT = BASE_DIR / "mediafiles"
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
-LOGIN_REDIRECT_URL = "/api/app"
-LOGIN_URL = 'api/app/login/'
+LOGIN_REDIRECT_URL = "/app/"
+LOGIN_URL = '/app/login/'
