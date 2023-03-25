@@ -1,3 +1,4 @@
+from django.db import transaction
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import generics, status
 from rest_framework.permissions import IsAuthenticated
@@ -5,7 +6,7 @@ from rest_framework.response import Response
 from dictionary.api.serializers import LanguageSerializer, WordSerializer, WordCardSerializer, UserProfileSerializer, \
     WordCardSerializerDetail
 
-from dictionary.models import Language, Word, WordCard, UserProfile, WordCardProgress
+from dictionary.models import Language, Word, WordCard, UserProfile, WordCardProgress, CardGroup
 
 
 class UserProfileAPI(generics.GenericAPIView):
@@ -43,6 +44,13 @@ class WordCardApiView(generics.ListCreateAPIView):
     def get_queryset(self):
         return WordCard.objects.all()
 
+    def perform_create(self, serializer):
+        with transaction.atomic():
+            instance: WordCard = serializer.save()
+            cg_id = self.request.data.get('card_group_id')
+            cg: CardGroup = CardGroup.objects.get(id=cg_id)
+            cg.cards.add(instance)
+
 
 class WordCardApiDetailView(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = WordCardSerializerDetail  # WordCardSerializer
@@ -52,6 +60,15 @@ class WordCardApiDetailView(generics.RetrieveUpdateDestroyAPIView):
         context = super(WordCardApiDetailView, self).get_serializer_context()
         context.update({"userprofile": self.request.user.userprofile})
         return context
+
+    def perform_update(self, serializer):
+        with transaction.atomic():
+            old_instance:WordCard = self.get_object()
+            print(old_instance.cardgroups)
+            instance: WordCard = serializer.save()
+            cg_id = self.request.data.get('card_group_id')
+            cg: CardGroup = CardGroup.objects.get(id=cg_id)
+            cg.cards.add(instance)
 
     def get_queryset(self):
         return WordCard.objects.all()

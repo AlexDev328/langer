@@ -25,9 +25,10 @@ class WordSerializerS(serializers.ModelSerializer):
 
 class WordSerializerInternal(serializers.ModelSerializer):
     language_id = serializers.IntegerField()
+
     class Meta:
         model = Word
-        fields = ('text', 'language_id', 'transcription')
+        fields = ('text', 'language_id')
 
     def create(self, validated_data):
         language_data = validated_data.pop('language_id')

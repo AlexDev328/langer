@@ -52,6 +52,7 @@ INSTALLED_APPS = [
     # local
     "dictionary.apps.DictionaryConfig",
     'trainings.apps.TrainingsConfig',
+    "userprofile.apps.UserprofileConfig"
 
 ]
 

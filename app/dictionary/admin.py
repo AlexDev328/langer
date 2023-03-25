@@ -7,7 +7,7 @@ from .models import Word, WordCard, WordCardProgress, Language, CardGroup, UserP
 admin.site.register(Word)
 admin.site.register(WordCard)
 admin.site.register(Language)
-admin.site.register(UserProfile)
+
 
 @admin.register(CardGroup)
 class CardGroupAdmin(admin.ModelAdmin):

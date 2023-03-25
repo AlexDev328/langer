@@ -4,6 +4,8 @@ from django.contrib.auth.models import User
 from django.db import models
 from django.db.models import Q
 
+from userprofile.models import UserProfile
+
 
 class Language(models.Model):
     name = models.CharField('Название', max_length=50)
@@ -20,7 +22,6 @@ class Language(models.Model):
 
 class Word(models.Model):
     text = models.CharField('Слово или фраза', max_length=150)
-    transcription = models.CharField('транскрипция', max_length=150, null=True, blank=True)
     language = models.ForeignKey(Language, on_delete=models.CASCADE, verbose_name='язык')
 
     def __str__(self):
@@ -32,14 +33,11 @@ class Word(models.Model):
 
 
 class ManagerWordCard(models.Manager):
-    def get_random_words(self, user_id, language_id: Language, except_id=None, count: int = 2) -> list['WordCard']:
-        condition = (Q(owner_id=user_id) | Q(is_public=True)) & Q(word__language_id=language_id) & ~Q(id=except_id)
+    def get_random_words(self, owner_id, language_id: Language, except_id=None, count: int = 2) -> list['WordCard']:
         query = super(models.Manager, self).get_queryset().filter(
-            (Q(owner_id=user_id) | Q(is_public=True)) & Q(word__language_id=language_id) & ~Q(id=except_id)).order_by(
+            (Q(owner_id=owner_id) | Q(is_public=True)) & Q(word__language_id=language_id) & ~Q(id=except_id)).order_by(
             'id')
-
         random_words = random.choices(query, k=count)
-
         return random_words
 
     def get_options_for_wordcard(self, user_id, wordcard: 'WordCard', count: int = 2):
@@ -56,13 +54,15 @@ class ManagerWordCard(models.Manager):
 
 class WordCard(models.Model):
     word = models.ForeignKey(Word, on_delete=models.CASCADE, verbose_name='слово или фраза', related_name='word_cards')
+    transcription = models.CharField('транскрипция', max_length=255, blank=True, null=True)
+
     translation = models.ForeignKey(Word, on_delete=models.CASCADE, verbose_name='перевод',
                                     related_name='translation_cards')
     # объяснение перевода слова
     description = models.CharField('значение', max_length=300, null=True, blank=True)
     # примеры использования
     example = models.CharField("пример использования", max_length=300, null=True, blank=True)
-    owner = models.ForeignKey('UserProfile', on_delete=models.CASCADE, null=True, verbose_name='создатель')
+    owner = models.ForeignKey(UserProfile, on_delete=models.CASCADE, null=True, verbose_name='создатель')
     is_public = models.BooleanField('доступна всем', default=True)
 
     objects = ManagerWordCard()
@@ -77,12 +77,12 @@ class WordCard(models.Model):
 
 class CardGroup(models.Model):
     name = models.CharField('группа', max_length=300)
-    cards = models.ManyToManyField(WordCard, verbose_name='карточки')
-    owner = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name='создатель')
+    cards = models.ManyToManyField(WordCard, verbose_name='карточки', null=True, blank=True, related_name='cardgroups')
+    owner = models.ForeignKey(UserProfile, on_delete=models.CASCADE, verbose_name='создатель')
     is_public = models.BooleanField('доступна всем', default=False)
 
     def __str__(self):
-        return f"{self.name} ({self.owner.username})"
+        return f"{self.name} ({self.owner.user.username})"
 
     class Meta:
         verbose_name = 'подборка'
@@ -90,10 +90,8 @@ class CardGroup(models.Model):
 
 
 class WordCardProgress(models.Model):
-    user = models.ForeignKey('UserProfile', on_delete=models.CASCADE, verbose_name='пользователь', null=True)
+    user = models.ForeignKey(UserProfile, on_delete=models.CASCADE, verbose_name='пользователь', null=True)
     card = models.ForeignKey(WordCard, on_delete=models.CASCADE, verbose_name='карточка')
-    '''score = models.FloatField('процент правильных ответов [0..1]', default=0)
-    count = models.IntegerField('количество тренировок', default=0)'''
     score = models.IntegerField('знание словарной карточки (0..10)', default=0)
 
     def __str__(self):
@@ -104,13 +102,4 @@ class WordCardProgress(models.Model):
         verbose_name_plural = 'Прогрессы'
 
 
-class UserProfile(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
-    default_language = models.ForeignKey(Language, on_delete=models.DO_NOTHING, null=True, blank=True)
 
-    def __str__(self):
-        return f'{self.user.username} - {self.default_language.name}'
-
-    class Meta:
-        verbose_name = 'Профиль пользователя'
-        verbose_name_plural = 'Профили пользователей'
