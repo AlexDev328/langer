@@ -54,7 +54,7 @@ services:
 
   pgadmin:
     user: root
-    container_name: pgadmin_container
+    container_name: pgadmin_container_langer
     image: dpage/pgadmin4
     environment:
       PGADMIN_DEFAULT_EMAIL: "test@test.test"
