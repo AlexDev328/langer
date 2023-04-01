@@ -1,10 +1,10 @@
 from django.db import transaction
 from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework import generics, status
+from rest_framework import generics, status, serializers
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from dictionary.api.serializers import LanguageSerializer, WordSerializer, WordCardSerializer, UserProfileSerializer, \
-    WordCardSerializerDetail
+    WordCardSerializerDetail, CardGroupSerializer, WordSerializerInternal
 
 from dictionary.models import Language, Word, WordCard, UserProfile, WordCardProgress, CardGroup
 
@@ -44,13 +44,6 @@ class WordCardApiView(generics.ListCreateAPIView):
     def get_queryset(self):
         return WordCard.objects.all()
 
-    def perform_create(self, serializer):
-        with transaction.atomic():
-            instance: WordCard = serializer.save()
-            cg_id = self.request.data.get('card_group_id')
-            cg: CardGroup = CardGroup.objects.get(id=cg_id)
-            cg.cards.add(instance)
-
 
 class WordCardApiDetailView(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = WordCardSerializerDetail  # WordCardSerializer
@@ -61,17 +54,85 @@ class WordCardApiDetailView(generics.RetrieveUpdateDestroyAPIView):
         context.update({"userprofile": self.request.user.userprofile})
         return context
 
-    def perform_update(self, serializer):
-        with transaction.atomic():
-            old_instance:WordCard = self.get_object()
-            print(old_instance.cardgroups)
-            instance: WordCard = serializer.save()
-            cg_id = self.request.data.get('card_group_id')
-            cg: CardGroup = CardGroup.objects.get(id=cg_id)
-            cg.cards.add(instance)
-
     def get_queryset(self):
         return WordCard.objects.all()
+
+
+class WordCardApiDetailViewGroup(WordCardApiDetailView):
+    def perform_destroy(self, instance: WordCard):
+        instance.card_groups.remove(self.kwargs['group_pk'])
+        instance.save()
+        if not instance.card_groups:
+            instance.delete()
+
+
+class CardGroupsListAPI(generics.ListCreateAPIView):
+    serializer_class = CardGroupSerializer
+    filter_backends = [DjangoFilterBackend]
+    filterset_fields = ['language_id']
+
+    def get_queryset(self):
+        return CardGroup.objects.filter(owner=self.request.user.userprofile)
+
+
+class CardGroupsDetailAPI(generics.RetrieveUpdateDestroyAPIView):
+    serializer_class = CardGroupSerializer
+
+    def get_queryset(self):
+        return CardGroup.objects.filter(owner=self.request.user.userprofile)
+
+
+class CardGroupsCollectionAPI(generics.ListCreateAPIView):
+    class WordCardSerializer(serializers.ModelSerializer):
+        word = WordSerializerInternal()
+        translation = WordSerializerInternal()
+        score = serializers.SerializerMethodField()
+
+        @transaction.atomic
+        def create(self, validated_data):
+            word_data = validated_data.pop('word')
+            translation_data = validated_data.pop('translation')
+            word, _ = Word.objects.get_or_create(**word_data)
+            translation, _ = Word.objects.get_or_create(**translation_data)
+            obj = super().create(word=word,
+                                 translation=translation, owner=self.context.get('userprofile'),
+                                 **validated_data)
+            return obj
+
+        @transaction.atomic
+        def update(self, instance: WordCard, validated_data):
+
+            if validated_data.get('word'):
+                word_data = validated_data.pop('word')
+                updated_word = WordSerializerInternal(instance=instance.word, data=word_data)
+                if updated_word.is_valid():
+                    updated_word.save()
+
+            if validated_data.get('translation'):
+                transation_data = validated_data.pop('translation')
+                updated_translition = WordSerializerInternal(instance=instance.translation, data=transation_data)
+                if updated_translition.is_valid():
+                    updated_translition.save()
+
+            for attr, value in validated_data.items():
+                setattr(instance, attr, value)
+            instance.save()
+            return instance
+
+        def get_score(self, obj):
+            try:
+                return WordCardProgress.objects.get(card=obj.id)
+            except:
+                return 0
+
+        class Meta:
+            model = WordCard
+            exclude = ('owner', 'card_groups')
+
+    serializer_class = WordCardSerializer
+
+    def get_queryset(self):
+        return WordCard.objects.filter(card_groups=self.kwargs['pk'])
 
 
 class WordCardProgressApi(generics.CreateAPIView):

@@ -64,6 +64,7 @@ class WordCard(models.Model):
     example = models.CharField("пример использования", max_length=300, null=True, blank=True)
     owner = models.ForeignKey(UserProfile, on_delete=models.CASCADE, null=True, verbose_name='создатель')
     is_public = models.BooleanField('доступна всем', default=True)
+    card_groups = models.ManyToManyField('CardGroup', verbose_name='словарные группы', blank=True)
 
     objects = ManagerWordCard()
 
@@ -77,9 +78,17 @@ class WordCard(models.Model):
 
 class CardGroup(models.Model):
     name = models.CharField('группа', max_length=300)
-    cards = models.ManyToManyField(WordCard, verbose_name='карточки', null=True, blank=True, related_name='cardgroups')
+    language_id = models.ForeignKey(Language, on_delete=models.CASCADE, null=True, blank=False)
     owner = models.ForeignKey(UserProfile, on_delete=models.CASCADE, verbose_name='создатель')
     is_public = models.BooleanField('доступна всем', default=False)
+
+    @property
+    def card_count(self):
+        return self.wordcard_set.count()
+
+    @property
+    def card_learned(self):
+        return self.wordcard_set.filter(wordcardprogress__score=1).count()
 
     def __str__(self):
         return f"{self.name} ({self.owner.user.username})"
@@ -90,12 +99,11 @@ class CardGroup(models.Model):
 
 
 class WordCardProgress(models.Model):
-    user = models.ForeignKey(UserProfile, on_delete=models.CASCADE, verbose_name='пользователь', null=True)
     card = models.ForeignKey(WordCard, on_delete=models.CASCADE, verbose_name='карточка')
     score = models.IntegerField('знание словарной карточки (0..10)', default=0)
 
     def __str__(self):
-        return f"{self.user.user.username} - {self.card.word.text} - {self.score}"
+        return f"{self.card.owner} {self.card.word.text} - {self.score}"
 
     class Meta:
         verbose_name = 'Прогресс'
