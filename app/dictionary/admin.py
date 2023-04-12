@@ -11,7 +11,7 @@ admin.site.register(Language)
 
 @admin.register(CardGroup)
 class CardGroupAdmin(admin.ModelAdmin):
-    list_display = ('name', 'owner', 'is_public')
+    list_display = ('name', 'is_public')
 
 
 admin.site.register(WordCardProgress)

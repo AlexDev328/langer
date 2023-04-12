@@ -20,17 +20,18 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/
 
 
-CSRF_TRUSTED_ORIGINS = ["http://2.59.41.105", ]#os.environ.get("DJANGO_ALLOWED_HOSTS", default='localhost 127.0.0.1').split(" ")
+CSRF_TRUSTED_ORIGINS = ["http://192.168.50.196", "http://127.0.0.1:8000"]#os.environ.get("DJANGO_ALLOWED_HOSTS", default='localhost 127.0.0.1').split(" ")
 
 SECRET_KEY = os.environ.get("SECRET_KEY", default='somerandomkey')
 
 DEBUG = int(os.environ.get("DEBUG", default=True))
 
-ALLOWED_HOSTS = os.environ.get("DJANGO_ALLOWED_HOSTS", default='localhost 127.0.0.1').split(" ")
-
+#ALLOWED_HOSTS = os.environ.get("DJANGO_ALLOWED_HOSTS", default='localhost 127.0.0.1, 192.168.50.165').split(" ")
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', '192.168.50.165']
 CORS_ALLOWED_ORIGINS = [
     "http://langer.1164993-aidev.tw1.ru",
     "http://localhost:3000",
+    "http://127.0.0.1:8000"
 ]
 
 CORS_ALLOW_ALL_ORIGINS = True
@@ -46,9 +47,10 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "corsheaders",
     "rest_framework",
+    'django_filters',
     'rest_framework_simplejwt',
     "crispy_forms",
-    'django_filters',
+
     # local
     "dictionary.apps.DictionaryConfig",
     'trainings.apps.TrainingsConfig',
@@ -70,6 +72,8 @@ MIDDLEWARE = [
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
+
+APPEND_SLASH=False
 
 REST_FRAMEWORK = {
     'DEFAULT_FILTER_BACKENDS': ['django_filters.rest_framework.DjangoFilterBackend'],

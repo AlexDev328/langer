@@ -33,23 +33,31 @@ class Word(models.Model):
 
 
 class ManagerWordCard(models.Manager):
-    def get_random_words(self, owner_id, language_id: Language, except_id=None, count: int = 2) -> list['WordCard']:
-        query = super(models.Manager, self).get_queryset().filter(
-            (Q(owner_id=owner_id) | Q(is_public=True)) & Q(word__language_id=language_id) & ~Q(id=except_id)).order_by(
-            'id')
-        random_words = random.choices(query, k=count)
-        return random_words
 
-    def get_options_for_wordcard(self, user_id, wordcard: 'WordCard', count: int = 2):
-        query = super(models.Manager, self).get_queryset().filter(
-            (Q(owner_id=user_id) | Q(is_public=True)) &
-            Q(word__language_id=wordcard.word.language_id) &
-            ~Q(id=wordcard.id)
-        ).order_by('id').values_list('translation__text', flat=True)
+    def get_training_set(self, language_id, user, size=5) -> list['WordCard']:
+        cards = self.filter(Q(owner=user) | Q(used_by=user) & Q(word__language_id=language_id)).order_by('?')[:50]
+        cards_count = cards.count()
+        if cards_count < size:
+            size = cards_count
+        cards = random.sample(list(cards), size)
+        return cards
 
-        random_words = random.choices(query, k=count)
+    def get_wordcard_for_training(self, language_id, user, cardgroup_id=None) -> 'WordCard':
+        if cardgroup_id:
+            card = self.filter((Q(owner=user) | Q(used_by=user)) & Q(word__language_id=language_id) & Q(
+                card_groups=cardgroup_id)).order_by('?')[0]
+        else:
+            card = self.filter(Q(owner=user) | Q(used_by=user) & Q(word__language_id=language_id)).order_by('?')[0]
+        return card
 
-        return random_words
+    def get_options_set(self, wordcard, user, size=5) -> list[str]:
+        cards = self.filter(
+            (Q(owner=user) | Q(used_by=user)) & Q(word__language_id=wordcard.word.language_id)).order_by('?').values_list('translation__text', flat=True)
+        cards_count = cards.count()
+        if cards_count < size:
+            size = cards_count
+        cards = random.sample(list(cards), size)
+        return cards
 
 
 class WordCard(models.Model):
@@ -62,11 +70,15 @@ class WordCard(models.Model):
     description = models.CharField('значение', max_length=300, null=True, blank=True)
     # примеры использования
     example = models.CharField("пример использования", max_length=300, null=True, blank=True)
-    owner = models.ForeignKey(UserProfile, on_delete=models.CASCADE, null=True, verbose_name='создатель')
-    is_public = models.BooleanField('доступна всем', default=True)
-    card_groups = models.ManyToManyField('CardGroup', verbose_name='словарные группы', blank=True)
+    owner = models.ForeignKey(UserProfile, on_delete=models.CASCADE, null=True, verbose_name='создатель',
+                              related_name='wordcards')
+    used_by = models.ManyToManyField(UserProfile, related_name='shared_wordcards', blank=True)
+    is_public = models.BooleanField('доступна всем', default=False)
+    card_groups = models.ManyToManyField('CardGroup', verbose_name='словарные группы', blank=True,
+                                         related_name='wordcards')
 
-    objects = ManagerWordCard()
+    objects = models.Manager()
+    training = ManagerWordCard()
 
     def __str__(self):
         return f'{str(self.word)} - {str(self.translation)}'
@@ -76,22 +88,33 @@ class WordCard(models.Model):
         verbose_name_plural = 'карточки'
 
 
+class ManagerCardGroup(models.Manager):
+    def get_training_set(self, user, size=5) -> list[WordCard]:
+        cards = self.wordcards.filter(Q(owner=user) | Q(used_by=user)).order_by('?')[:50]
+        cards_count = cards.count()
+        if cards_count < size:
+            size = cards_count
+        cards = random.sample(list(cards), size)
+        return cards
+
+
 class CardGroup(models.Model):
     name = models.CharField('группа', max_length=300)
-    language_id = models.ForeignKey(Language, on_delete=models.CASCADE, null=True, blank=False)
-    owner = models.ForeignKey(UserProfile, on_delete=models.CASCADE, verbose_name='создатель')
+    language = models.ForeignKey(Language, on_delete=models.CASCADE, null=True, blank=False)
+    owner = models.ForeignKey(UserProfile, on_delete=models.DO_NOTHING, verbose_name='создатель',
+                              related_name='card_groups')
+    used_by = models.ManyToManyField(UserProfile, related_name='shared_cardgroups', blank=True)
     is_public = models.BooleanField('доступна всем', default=False)
+
+    objects = models.Manager()
+    training = ManagerCardGroup()
 
     @property
     def card_count(self):
-        return self.wordcard_set.count()
-
-    @property
-    def card_learned(self):
-        return self.wordcard_set.filter(wordcardprogress__score=1).count()
+        return self.wordcards.count()
 
     def __str__(self):
-        return f"{self.name} ({self.owner.user.username})"
+        return f"{self.name} "
 
     class Meta:
         verbose_name = 'подборка'
@@ -99,15 +122,13 @@ class CardGroup(models.Model):
 
 
 class WordCardProgress(models.Model):
+    owner = models.ForeignKey(UserProfile, on_delete=models.CASCADE, null=True, blank=True)
     card = models.ForeignKey(WordCard, on_delete=models.CASCADE, verbose_name='карточка')
     score = models.IntegerField('знание словарной карточки (0..10)', default=0)
 
     def __str__(self):
-        return f"{self.card.owner} {self.card.word.text} - {self.score}"
+        return f"{self.owner.user.username if self.owner else ''} {self.card.word.text} - {self.score}"
 
     class Meta:
         verbose_name = 'Прогресс'
         verbose_name_plural = 'Прогрессы'
-
-
-
