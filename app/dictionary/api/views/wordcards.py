@@ -2,6 +2,7 @@ from django.db import transaction
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import generics, serializers
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
 
 from dictionary.api.filters import WordCardFilter
 from dictionary.api.paginations import StandardResultsSetPagination
@@ -30,7 +31,7 @@ class WordCardApiView(generics.ListCreateAPIView):
 class WordCardApiDetailView(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = WordCardSerializerDetail
     pagination_class = StandardResultsSetPagination
-    permission_classes = (IsAuthenticated,)
+    permission_classes = (IsAuthenticated, CanAddCardToGroup)
 
     def get_serializer_context(self, **kwargs):
         context = super(WordCardApiDetailView, self).get_serializer_context()
@@ -45,15 +46,15 @@ class WordCardApiDetailViewGroup(WordCardApiDetailView):
     class WordCardInGroupSerializer(serializers.ModelSerializer):
         word = WordSerializerInternal()
         translation = WordSerializerInternal()
-        score = serializers.SerializerMethodField()
+        score = serializers.SerializerMethodField(read_only=True)
 
-        # card_groups = serializers.PrimaryKeyRelatedField(queryset=CardGroup.objects.all(), many=True, write_only=True)
+        card_groups = serializers.PrimaryKeyRelatedField(queryset=CardGroup.objects.all(), many=True, write_only=True)
 
         def validate(self, data):
             word_language = data['word']['language']
 
             card_group_language = CardGroup.objects.get(id=self.context['view'].kwargs['group_pk']).language_id
-            if word_language != card_group_language:
+            if word_language.id != card_group_language:
                 raise serializers.ValidationError("Язык слова должен совпадать с языком набора")
             return data
 
@@ -73,7 +74,10 @@ class WordCardApiDetailViewGroup(WordCardApiDetailView):
                 owner=self.context.get('userprofile'),
                 **validated_data
             )
-            obj.card_groups.add(self.context['view'].kwargs['pk'])
+            #if card_groups_data:
+            print(obj.card_groups)
+            print(self.context['view'].kwargs['pk'])
+            obj.card_groups.add(self.context['view'].kwargs['group_pk'])
             return obj
 
         @transaction.atomic
@@ -104,7 +108,7 @@ class WordCardApiDetailViewGroup(WordCardApiDetailView):
 
         class Meta:
             model = WordCard
-            exclude = ('owner', 'used_by', 'is_public', 'card_groups')
+            exclude = ('owner', 'used_by', 'is_public', )
 
     serializer_class = WordCardInGroupSerializer
 
@@ -115,6 +119,24 @@ class WordCardApiDetailViewGroup(WordCardApiDetailView):
 
     def get_queryset(self):
         return WordCard.objects.all()
+
+    def update(self, request, *args, **kwargs):
+        instance = self.get_object()
+        if instance.owner != request.user:
+            # Создать копию карточки с новым владельцем
+            #copy_data = request.data#serializer.validated_data.copy()
+
+            copy_serializer = self.get_serializer(data=request.data)
+            #copy_serializer['owner'] = request.user
+            copy_serializer.is_valid(raise_exception=True)
+            copy_serializer.save()
+            instance = copy_serializer.instance
+            return Response(self.get_serializer(instance).data)
+        else:
+            serializer = self.get_serializer(instance, data=request.data)
+            serializer.is_valid(raise_exception=True)
+            self.perform_update(serializer)
+            return Response(serializer.data)
 
     def perform_destroy(self, instance: WordCard):
         instance.card_groups.remove(self.kwargs['group_pk'])
