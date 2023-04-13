@@ -1,6 +1,4 @@
 import random
-
-from django.contrib.auth.models import User
 from django.db import models
 from django.db.models import Q
 
@@ -19,6 +17,8 @@ class Language(models.Model):
         verbose_name = 'язык'
         verbose_name_plural = 'языки'
 
+    objects: models.Manager()
+
 
 class Word(models.Model):
     text = models.CharField('Слово или фраза', max_length=150)
@@ -30,6 +30,8 @@ class Word(models.Model):
     class Meta:
         verbose_name = 'cлово'
         verbose_name_plural = 'cлова'
+
+    objects: models.Manager()
 
 
 class ManagerWordCard(models.Manager):
@@ -52,7 +54,8 @@ class ManagerWordCard(models.Manager):
 
     def get_options_set(self, wordcard, user, size=5) -> list[str]:
         cards = self.filter(
-            (Q(owner=user) | Q(used_by=user)) & Q(word__language_id=wordcard.word.language_id)).order_by('?').values_list('translation__text', flat=True)
+            (Q(owner=user) | Q(used_by=user)) & Q(word__language_id=wordcard.word.language_id)).order_by(
+            '?').values_list('translation__text', flat=True)
         cards_count = cards.count()
         if cards_count < size:
             size = cards_count
@@ -125,6 +128,8 @@ class WordCardProgress(models.Model):
     owner = models.ForeignKey(UserProfile, on_delete=models.CASCADE, null=True, blank=True)
     card = models.ForeignKey(WordCard, on_delete=models.CASCADE, verbose_name='карточка')
     score = models.IntegerField('знание словарной карточки (0..10)', default=0)
+
+    objects: models.Manager()
 
     def __str__(self):
         return f"{self.owner.user.username if self.owner else ''} {self.card.word.text} - {self.score}"

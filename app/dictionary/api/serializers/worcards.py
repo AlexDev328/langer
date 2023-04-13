@@ -1,21 +1,7 @@
 from django.db import transaction
 from rest_framework import serializers
 
-from dictionary.models import Language, WordCard, CardGroup, WordCardProgress, Word, UserProfile
-
-
-class LanguageSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Language
-        fields = '__all__'
-
-
-class WordSerializer(serializers.ModelSerializer):
-    language = LanguageSerializer()
-
-    class Meta:
-        model = Word
-        fields = '__all__'
+from dictionary.models import Language, Word, CardGroup, WordCard, WordCardProgress
 
 
 class WordSerializerInternal(serializers.ModelSerializer):
@@ -112,16 +98,3 @@ class WordCardSerializerDetail(WordCardSerializer):
             return WordCardProgress.objects.get(card=obj, owner=self.context['userprofile']).score
         except WordCardProgress.DoesNotExist:
             return 0
-
-
-class CardGroupSerializer(serializers.ModelSerializer):
-    card_count = serializers.IntegerField(read_only=True)
-    card_learned = serializers.SerializerMethodField(read_only=True)
-
-    class Meta:
-        model = CardGroup
-        exclude = ('owner', 'used_by', 'is_public')
-
-    def get_card_learned(self, obj: CardGroup):
-        return obj.wordcards.filter(wordcardprogress__owner=self.context['request'].user.userprofile,
-                                    wordcardprogress__score=10).count()
