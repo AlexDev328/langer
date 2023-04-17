@@ -6,3 +6,5 @@ class DictionaryConfig(AppConfig):
     name = "dictionary"
     verbose_name = "Вуфный словарь"
 
+
+

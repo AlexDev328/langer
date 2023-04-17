@@ -113,7 +113,7 @@ class WordCardApiDetailViewGroup(WordCardApiDetailView):
     serializer_class = WordCardInGroupSerializer
 
     def get_serializer_context(self, **kwargs):
-        context = super(WordCardApiDetailView, self).get_serializer_context()
+        context = super(WordCardApiDetailViewGroup, self).get_serializer_context()
         context.update({"userprofile": self.request.user.userprofile})
         return context
 
@@ -129,8 +129,11 @@ class WordCardApiDetailViewGroup(WordCardApiDetailView):
             copy_serializer = self.get_serializer(data=request.data)
             #copy_serializer['owner'] = request.user
             copy_serializer.is_valid(raise_exception=True)
-            copy_serializer.save()
+            copy_serializer.save()#create
             instance = copy_serializer.instance
+            #instance почистить used_by
+            # в оригинальной карточке used_by удалить текущего пользователя
+            # что то сделать с прогрессами
             return Response(self.get_serializer(instance).data)
         else:
             serializer = self.get_serializer(instance, data=request.data)
