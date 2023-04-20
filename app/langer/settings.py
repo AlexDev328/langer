@@ -20,19 +20,15 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/
 
 
-CSRF_TRUSTED_ORIGINS = ["http://192.168.50.196", "http://127.0.0.1:8000"]#os.environ.get("DJANGO_ALLOWED_HOSTS", default='localhost 127.0.0.1').split(" ")
+CSRF_TRUSTED_ORIGINS =  os.environ.get("DJANGO_ALLOWED_ORIGINS", default='http://localhost http://127.0.0.1, http://192.168.50.165').split(" ")
 
 SECRET_KEY = os.environ.get("SECRET_KEY", default='somerandomkey')
 
 DEBUG = int(os.environ.get("DEBUG", default=True))
 
-#ALLOWED_HOSTS = os.environ.get("DJANGO_ALLOWED_HOSTS", default='localhost 127.0.0.1, 192.168.50.165').split(" ")
-ALLOWED_HOSTS = ['localhost', '127.0.0.1', '192.168.50.165']
-CORS_ALLOWED_ORIGINS = [
-    "http://langer.1164993-aidev.tw1.ru",
-    "http://localhost:3000",
-    "http://127.0.0.1:8000"
-]
+ALLOWED_HOSTS = os.environ.get("DJANGO_ALLOWED_HOSTS", default='localhost 127.0.0.1, 192.168.50.165').split(" ")
+
+CORS_ALLOWED_ORIGINS = os.environ.get("DJANGO_ALLOWED_ORIGINS", default='http://localhost http://127.0.0.1, http://192.168.50.165').split(" ")
 
 CORS_ALLOW_ALL_ORIGINS = True
 

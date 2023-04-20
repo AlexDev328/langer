@@ -48,7 +48,7 @@ class WordCardApiDetailViewGroup(WordCardApiDetailView):
         translation = WordSerializerInternal()
         score = serializers.SerializerMethodField(read_only=True)
 
-        card_groups = serializers.PrimaryKeyRelatedField(queryset=CardGroup.objects.all(), many=True, write_only=True)
+        #card_groups = serializers.PrimaryKeyRelatedField(queryset=CardGroup.objects.all(), many=True, write_only=True)
 
         def validate(self, data):
             word_language = data['word']['language']
@@ -86,13 +86,13 @@ class WordCardApiDetailViewGroup(WordCardApiDetailView):
             if validated_data.get('word'):
                 word_data = validated_data.pop('word')
                 updated_word = WordSerializerInternal(instance=instance.word, data=word_data)
-                if updated_word.is_valid():
+                if updated_word.is_valid(raise_exception=True):
                     updated_word.save()
 
             if validated_data.get('translation'):
                 transation_data = validated_data.pop('translation')
                 updated_translition = WordSerializerInternal(instance=instance.translation, data=transation_data)
-                if updated_translition.is_valid():
+                if updated_translition.is_valid(raise_exception=True):
                     updated_translition.save()
 
             for attr, value in validated_data.items():
@@ -122,7 +122,7 @@ class WordCardApiDetailViewGroup(WordCardApiDetailView):
 
     def update(self, request, *args, **kwargs):
         instance = self.get_object()
-        if instance.owner != request.user:
+        if instance.owner != request.user.userprofile:
             # Создать копию карточки с новым владельцем
             #copy_data = request.data#serializer.validated_data.copy()
 
