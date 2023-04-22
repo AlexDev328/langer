@@ -8,18 +8,19 @@ from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.settings import api_settings
 
-from dictionary.new_api.logical.views.bAPIView import BApiView
+from dictionary.new_api.logical.views.service_based_apiview import ServiceBasedAPIView
 
 
 class CreateModelMixin:
     """
     Create a model instance.
     """
-    def create(self:BApiView, request, *args, **kwargs):
+
+    def create(self: ServiceBasedAPIView, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
 
-        service = self.get_service(serializer.validated_data)
+        service = self.get_service(data=serializer.validated_data)
         service.is_valid(raise_exception=True)
 
         self.perform_create(service)
@@ -28,6 +29,7 @@ class CreateModelMixin:
 
     def perform_create(self, service):
         service.save()
+
 
     def get_success_headers(self, data):
         try:
@@ -40,6 +42,7 @@ class ListModelMixin:
     """
     List a queryset.
     """
+
     def list(self, request, *args, **kwargs):
         queryset = self.filter_queryset(self.get_queryset())
 
@@ -56,6 +59,7 @@ class RetrieveModelMixin:
     """
     Retrieve a model instance.
     """
+
     def retrieve(self, request, *args, **kwargs):
         instance = self.get_object()
         serializer = self.get_serializer(instance)
@@ -66,6 +70,7 @@ class UpdateModelMixin:
     """
     Update a model instance.
     """
+
     def update(self, request, *args, **kwargs):
         partial = kwargs.pop('partial', False)
         instance = self.get_object()
@@ -96,6 +101,7 @@ class DestroyModelMixin:
     """
     Destroy a model instance.
     """
+
     def destroy(self, request, *args, **kwargs):
         instance = self.get_object()
         self.perform_destroy(instance)
