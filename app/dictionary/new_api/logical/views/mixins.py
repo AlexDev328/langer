@@ -77,7 +77,7 @@ class UpdateModelMixin:
         serializer = self.get_serializer(instance, data=request.data, partial=partial)
         serializer.is_valid(raise_exception=True)
 
-        service = self.get_service(serializer.validated_data)
+        service = self.get_service(data=serializer.validated_data, instance=instance)
 
         service.is_valid(raise_exception=True)
         self.perform_update(serializer)
@@ -89,7 +89,7 @@ class UpdateModelMixin:
 
         return Response(serializer.data)
 
-    def perform_update(self, service):
+    def perform_update(self, service, instance=None):
         service.save()
 
     def partial_update(self, request, *args, **kwargs):

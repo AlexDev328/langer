@@ -25,5 +25,6 @@ urlpatterns = [
     path('api/', include("dictionary.api.urls")),
     path('api/', include("trainings.api.urls")),
     path('api/', include("userprofile.api.urls")),
+    path('api/v2/', include("dictionary.new_api.urls")),
 
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

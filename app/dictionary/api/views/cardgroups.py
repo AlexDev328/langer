@@ -115,5 +115,4 @@ class CardGroupsListAPI(generics.ListCreateAPIView):
         return CardGroup.objects.filter(owner=self.request.user.userprofile).order_by('id')
 
     def perform_create(self, serializer):
-        CardGroup.objects.create(*serializer.data, owner=self.request.user.userprofile)
-        # serializer.save(owner=self.request.user.userprofile)
+        serializer.save(owner=self.request.user.userprofile)

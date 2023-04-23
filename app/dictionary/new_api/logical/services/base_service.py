@@ -10,7 +10,7 @@ class BaseValidation:
         return True
 
 
-class BaseValidation:
+class TestValidation(BaseValidation):
 
     def is_valid(self, data, *args, **kwargs):
         return True
@@ -20,8 +20,9 @@ class BaseService:
     validation_classes = []
     model = None
 
-    def __init__(self, data, *args, **kwargs):
-        self.data = data
+    def __init__(self, serializer, *args, **kwargs):
+        self.data = serializer.validated_data
+        self.instance = serializer.instance
         self.valid = None
 
     def is_valid(self, raise_exception=False):
@@ -35,4 +36,18 @@ class BaseService:
         return True
 
     def save(self, **kwargs):
-        pass
+        if self.instance:
+            self.update(**kwargs)
+        else:
+            self.create(**kwargs)
+
+    def create(self, **kwargs):
+        self.model.objects.create(**kwargs)
+
+    def update(self, **kwargs):
+        for attr, value in self.data.items():
+            setattr(self.instance, attr, value)
+        for attr, value in kwargs.items():
+            setattr(self.instance, attr, value)
+        self.instance.save()
+        return self.instance
