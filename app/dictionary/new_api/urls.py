@@ -1,8 +1,8 @@
 from django.urls import path
 
 from .views import LanguageApiView, WordApiView, WordCardApiView, \
-    WordCardApiDetailView, CardGroupsListAPI, CardGroupsDetailAPI, CardGroupsCollectionAPI, WordCardApiDetailViewGroup, \
-    CardGroupsExtendAPI, CardGroupsCollectionAPIPageable
+    WordCardApiDetailView, CardGroupsDetailAPI, CardGroupsCollectionAPI, WordCardApiDetailViewGroup, \
+    CardGroupsExtendAPI, CardGroupsCollectionAPIPageable, CardGroupsListAPI
 
 urlpatterns = [
 

@@ -18,3 +18,11 @@ def check_ownership_on_groups(card_groups: list, user):
     except CardGroup.DoesNotExist:
         return False
     return True
+
+
+from dictionary.models import CardGroup
+from dictionary.new_api.logical.services.base_service import BaseService
+
+
+class CardGroupService(BaseService):
+    model = CardGroup

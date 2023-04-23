@@ -1,11 +1,12 @@
 from rest_framework import serializers
 
-from dictionary.models import CardGroup, WordCard
+from dictionary.models import CardGroup, WordCard, Language
 
 
 class CardGroupSerializer(serializers.ModelSerializer):
     card_count = serializers.IntegerField(read_only=True)
-    card_learned = serializers.SerializerMethodField(read_only=True)
+    card_learned = serializers.SerializerMethodField()
+    language = serializers.PrimaryKeyRelatedField(queryset=Language.objects.all())
 
     class Meta:
         model = CardGroup
@@ -14,6 +15,7 @@ class CardGroupSerializer(serializers.ModelSerializer):
     def get_card_learned(self, obj: CardGroup):
         return obj.wordcards.filter(wordcardprogress__owner=self.context['request'].user.userprofile,
                                     wordcardprogress__score=10).count()
+
 
 
 class CardGroupExpandSerializer(serializers.ModelSerializer):
