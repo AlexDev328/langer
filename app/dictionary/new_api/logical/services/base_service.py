@@ -1,3 +1,6 @@
+from typing import Type
+
+
 class BaseValidation:
     """
     A base class from which all permission classes should inherit.
@@ -37,12 +40,12 @@ class BaseService:
 
     def save(self, **kwargs):
         if self.instance:
-            self.update(**kwargs)
+            return self.update(**kwargs)
         else:
-            self.create(**kwargs)
+            return self.create(**kwargs)
 
     def create(self, **kwargs):
-        self.model.objects.create(**kwargs)
+        return self.model.objects.create(**kwargs)
 
     def update(self, **kwargs):
         for attr, value in self.data.items():

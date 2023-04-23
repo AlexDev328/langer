@@ -23,12 +23,15 @@ class CreateModelMixin:
         service = self.get_service(data=serializer.validated_data)
         service.is_valid(raise_exception=True)
 
-        self.perform_create(service)
+        new_instance = self.perform_create(service)
+
+        serializer = self.get_serializer(new_instance)
+
         headers = self.get_success_headers(serializer.data)
         return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
 
     def perform_create(self, service):
-        service.save()
+        return service.save()
 
 
     def get_success_headers(self, data):
@@ -80,7 +83,9 @@ class UpdateModelMixin:
         service = self.get_service(data=serializer.validated_data, instance=instance)
 
         service.is_valid(raise_exception=True)
-        self.perform_update(serializer)
+        new_instance = self.perform_update(service)
+
+        serializer = self.get_serializer(new_instance)
 
         if getattr(instance, '_prefetched_objects_cache', None):
             # If 'prefetch_related' has been applied to a queryset, we need to
@@ -89,8 +94,8 @@ class UpdateModelMixin:
 
         return Response(serializer.data)
 
-    def perform_update(self, service, instance=None):
-        service.save()
+    def perform_update(self, service, **kwargs):
+        return service.save()
 
     def partial_update(self, request, *args, **kwargs):
         kwargs['partial'] = True

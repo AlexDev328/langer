@@ -1,6 +1,6 @@
 from django.contrib.auth.models import User
 
-from dictionary.models import CardGroup
+from dictionary.models import CardGroup, WordCard, Word
 
 
 def check_ownership_on_group(card_group: int, user: User):
@@ -26,3 +26,13 @@ from dictionary.new_api.logical.services.base_service import BaseService
 
 class CardGroupService(BaseService):
     model = CardGroup
+
+
+class CardGroupExpandingService(BaseService):
+    model = WordCard
+
+    def save(self, **kwargs):
+        new = set([i.id for i in self.data['wordcards']])
+        old = set(self.instance.wordcards.all().values_list('id', flat=True))
+        self.instance.wordcards.set(old | new)
+        return self.instance
