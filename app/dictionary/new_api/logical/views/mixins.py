@@ -8,7 +8,6 @@ from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.settings import api_settings
 
-from dictionary.new_api.logical.views.service_based_apiview import ServiceBasedAPIView
 
 
 class CreateModelMixin:
@@ -16,7 +15,7 @@ class CreateModelMixin:
     Create a model instance.
     """
 
-    def create(self: ServiceBasedAPIView, request, *args, **kwargs):
+    def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
 
