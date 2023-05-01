@@ -23,7 +23,7 @@ urlpatterns = [
     path('auth/', include('rest_framework.urls')),
     path('app/', include("dictionary.urls")),
     path('api/', include("dictionary.api.urls")),
-    path('api/', include("trainings.api.urls")),
+    #path('api/', include("trainings.api.urls")),
     path('api/', include("userprofile.api.urls")),
     path('api/v2/', include("dictionary.new_api.urls")),
 

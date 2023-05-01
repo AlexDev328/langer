@@ -34,7 +34,7 @@ class ServiceBasedAPIView(GenericAPIView):
 
 
 class ServiceCreateAPIView(mixins.CreateModelMixin,
-                           GenericAPIView):
+                           ServiceBasedAPIView):
     """
     Concrete view for creating a model instance.
     """
@@ -44,7 +44,7 @@ class ServiceCreateAPIView(mixins.CreateModelMixin,
 
 
 class ServiceListAPIView(mixins.ListModelMixin,
-                         GenericAPIView):
+                         ServiceBasedAPIView):
     """
     Concrete view for listing a queryset.
     """
@@ -54,7 +54,7 @@ class ServiceListAPIView(mixins.ListModelMixin,
 
 
 class ServiceRetrieveAPIView(mixins.RetrieveModelMixin,
-                             GenericAPIView):
+                             ServiceBasedAPIView):
     """
     Concrete view for retrieving a model instance.
     """
@@ -64,7 +64,7 @@ class ServiceRetrieveAPIView(mixins.RetrieveModelMixin,
 
 
 class ServiceDestroyAPIView(mixins.DestroyModelMixin,
-                            GenericAPIView):
+                            ServiceBasedAPIView):
     """
     Concrete view for deleting a model instance.
     """
@@ -74,7 +74,7 @@ class ServiceDestroyAPIView(mixins.DestroyModelMixin,
 
 
 class ServiceUpdateAPIView(mixins.UpdateModelMixin,
-                           GenericAPIView):
+                           ServiceBasedAPIView):
     """
     Concrete view for updating a model instance.
     """
@@ -88,7 +88,7 @@ class ServiceUpdateAPIView(mixins.UpdateModelMixin,
 
 class ServiceListCreateAPIView(mixins.ListModelMixin,
                                mixins.CreateModelMixin,
-                               GenericAPIView):
+                               ServiceBasedAPIView):
     """
     Concrete view for listing a queryset or creating a model instance.
     """
@@ -102,7 +102,7 @@ class ServiceListCreateAPIView(mixins.ListModelMixin,
 
 class ServiceRetrieveUpdateAPIView(mixins.RetrieveModelMixin,
                                    mixins.UpdateModelMixin,
-                                   GenericAPIView):
+                                   ServiceBasedAPIView):
     """
     Concrete view for retrieving, updating a model instance.
     """
@@ -119,7 +119,7 @@ class ServiceRetrieveUpdateAPIView(mixins.RetrieveModelMixin,
 
 class ServiceRetrieveDestroyAPIView(mixins.RetrieveModelMixin,
                                     mixins.DestroyModelMixin,
-                                    GenericAPIView):
+                                    ServiceBasedAPIView):
     """
     Concrete view for retrieving or deleting a model instance.
     """
@@ -134,7 +134,7 @@ class ServiceRetrieveDestroyAPIView(mixins.RetrieveModelMixin,
 class ServiceRetrieveUpdateDestroyAPIView(mixins.RetrieveModelMixin,
                                           mixins.UpdateModelMixin,
                                           mixins.DestroyModelMixin,
-                                          GenericAPIView):
+                                          ServiceBasedAPIView):
     """
     Concrete view for retrieving, updating or deleting a model instance.
     """
