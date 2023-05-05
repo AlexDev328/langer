@@ -17,7 +17,6 @@ class CardGroupSerializer(serializers.ModelSerializer):
                                     wordcardprogress__score=10).count()
 
 
-
 class CardGroupExpandSerializer(serializers.ModelSerializer):
     wordcards = serializers.PrimaryKeyRelatedField(many=True, queryset=WordCard.objects.all())
 
@@ -25,8 +24,4 @@ class CardGroupExpandSerializer(serializers.ModelSerializer):
         model = CardGroup
         fields = ('wordcards',)
 
-    def update(self, instance, validated_data):
-        new = set([i.id for i in validated_data['wordcards']])
-        old = set(instance.wordcards.all().values_list('id', flat=True))
-        instance.wordcards.set(old | new)
-        return instance
+

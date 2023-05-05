@@ -1,6 +1,6 @@
 from rest_framework.generics import GenericAPIView
 
-from dictionary.new_api.logical.views import mixins
+from dictionary.api.logical.views import mixins
 
 
 class ServiceBasedAPIView(GenericAPIView):
@@ -10,7 +10,7 @@ class ServiceBasedAPIView(GenericAPIView):
 
     def get_service(self, *args, **kwargs):
         service_class = self.get_service_class()
-        kwargs.setdefault('context', self.get_serializer_context())
+        kwargs.setdefault('context', self.get_service_context())
         return service_class(*args, **kwargs)
 
     def get_service_class(self):

@@ -1,8 +1,8 @@
 from django.urls import path
 
 from .views import LanguageApiView, WordApiView, WordCardApiView, \
-    WordCardApiDetailView, CardGroupsListAPI, CardGroupsDetailAPI, CardGroupsCollectionAPI, WordCardApiDetailViewGroup, \
-    CardGroupsExtendAPI, CardGroupsCollectionAPIPageable
+    WordCardApiDetailView, CardGroupsDetailAPI, CardGroupsCollectionAPI, WordCardApiDetailViewGroup, \
+    CardGroupsExtendAPI, CardGroupsCollectionAPIPageable, CardGroupsListAPI
 
 urlpatterns = [
 
@@ -16,6 +16,6 @@ urlpatterns = [
     path("cardgroups/<int:pk>/card/page", CardGroupsCollectionAPIPageable.as_view()),
     path("cardgroups/<int:group_pk>/card/<int:pk>", WordCardApiDetailViewGroup.as_view(), name="words"),
 
-    path("wordcards", WordCardApiView.as_view(), name="words"),
+    path("wordcards", WordCardApiView.as_view(), name="wordcards listcreate"),
     path("wordcards/<int:pk>", WordCardApiDetailView.as_view(), name="words"),
 ]

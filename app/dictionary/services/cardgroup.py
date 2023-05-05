@@ -21,7 +21,7 @@ def check_ownership_on_groups(card_groups: list, user):
 
 
 from dictionary.models import CardGroup
-from dictionary.new_api.logical.services.base_service import BaseService
+from dictionary.api.logical.services.base_service import BaseService
 
 
 class CardGroupService(BaseService):

@@ -23,10 +23,11 @@ class BaseService:
     validation_classes = []
     model = None
 
-    def __init__(self, serializer, *args, **kwargs):
-        self.data = serializer.validated_data
-        self.instance = serializer.instance
+    def __init__(self, data, instance=None, *args, **kwargs):
+        self.data = data
+        self.instance = instance
         self.valid = None
+        self.context = kwargs.get('context', {})
 
     def is_valid(self, raise_exception=False):
         for v in self.validation_classes:
@@ -45,7 +46,7 @@ class BaseService:
             return self.create(**kwargs)
 
     def create(self, **kwargs):
-        return self.model.objects.create(**kwargs)
+        return self.model.objects.create(**self.data.update(kwargs))
 
     def update(self, **kwargs):
         for attr, value in self.data.items():
@@ -54,3 +55,6 @@ class BaseService:
             setattr(self.instance, attr, value)
         self.instance.save()
         return self.instance
+
+    def destroy(self, **kwargs):
+        self.instance.delete()

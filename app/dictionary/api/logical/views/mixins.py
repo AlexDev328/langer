@@ -108,8 +108,9 @@ class DestroyModelMixin:
 
     def destroy(self, request, *args, **kwargs):
         instance = self.get_object()
-        self.perform_destroy(instance)
+        service = self.get_service(instance=instance)
+        self.perform_destroy(service)
         return Response(status=status.HTTP_204_NO_CONTENT)
 
-    def perform_destroy(self, instance):
-        instance.delete()
+    def perform_destroy(self, service):
+        service.destroy()

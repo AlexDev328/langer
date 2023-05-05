@@ -1,15 +1,15 @@
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.permissions import IsAuthenticated
 
-from dictionary.new_api.serializers import CardGroupSerializer, WordSerializerInternal, CardGroupExpandSerializer
+from dictionary.api.serializers import CardGroupSerializer, WordSerializerInternal, CardGroupExpandSerializer
 from dictionary.models import CardGroup, WordCard, WordCardProgress
 from rest_framework import serializers
-from dictionary.new_api.logical.views.service_based_apiview import ServiceListCreateAPIView, \
+from dictionary.api.logical.views.service_based_apiview import ServiceListCreateAPIView, \
     ServiceRetrieveUpdateDestroyAPIView, ServiceUpdateAPIView
-from dictionary.new_api.paginations import StandardResultsSetPagination
-from dictionary.new_api.permissions import CanAddCardToGroup
-from dictionary.services.cardgroups import CardGroupService, CardGroupExpandingService
-from dictionary.services.wordcards import WordCardService
+from dictionary.api.paginations import StandardResultsSetPagination
+from dictionary.api.permissions import CanAddCardToGroup
+from dictionary.services.cardgroup import CardGroupService, CardGroupExpandingService
+from dictionary.services.wordcard import WordCardService
 
 
 class CardGroupsListAPI(ServiceListCreateAPIView):

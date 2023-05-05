@@ -3,8 +3,9 @@ from django.db import transaction
 
 from dictionary.api.serializers import WordSerializerInternal
 from dictionary.models import WordCard, Word
-from dictionary.new_api.logical.services.base_service import BaseService
+from dictionary.api.logical.services.base_service import BaseService
 from dictionary.services.word import WordService
+from langer import settings
 
 
 def process_update_wordcard(instance: WordCard, user: User, update_data: dict):
@@ -17,12 +18,12 @@ class WordCardService(BaseService):
     model = WordCard
 
     def get_card_groups_for_create(self, validated_data):
-        if not validated_data.get('card_groups'):
-            return self.context['view'].kwargs['pk']
+        if validated_data.get('card_groups') is None:
+            return self.context['view'].kwargs.get('pk', None)  # TODO Check
         return validated_data.pop('card_groups')
 
     def get_card_groups_for_update(self, validated_data):
-        if validated_data.get('card_groups'):
+        if validated_data.get('card_groups') is not None:
             return validated_data.pop('card_groups')
         return None
 
@@ -78,3 +79,20 @@ class WordCardService(BaseService):
         word_service.is_valid()
         word, created = word_service.get_or_create()
         setattr(self.instance, key, word)
+
+
+class WordCardInGroupService(WordCardService):
+    @transaction.atomic
+    def update(self):
+        if self.instance.owner != self.context['userprofile']:
+            return self.create()
+        else:
+            return super().update()
+
+    def destroy(self, **kwargs):
+        self.instance.card_groups.remove(self.context['request'].kwargs['group_pk'])
+        self.instance.save()
+        if not self.instance.card_groups.exists():
+            print('удаляем карточку')
+            if not settings.DEBUG:
+                self.instance.delete()
