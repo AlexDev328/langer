@@ -2,8 +2,14 @@ venv
 app/db.sqlite3
 .idea
 staticfiles
+app/staticfiles
+app/mediafiles
+app/mystatic
+
 .env.dev
+.env.dev.db
 .env.prod
 .env.prod.db
 
 *__pycache__*
+
