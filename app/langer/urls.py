@@ -17,14 +17,18 @@ from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import path, include
+from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView, SpectacularRedocView
 
 urlpatterns = [
+    # your other url patterns
+    path('api/schema/', SpectacularAPIView.as_view(), name='schema'),
     path("api/admin/", admin.site.urls),
     path('auth/', include('rest_framework.urls')),
     path('app/', include("dictionary.urls")),
-    path('api/', include("dictionary.api.urls")),
-    path('api/', include("trainings.api.urls")),
     path('api/', include("userprofile.api.urls")),
-    path('api/', include("alphabet.api.urls")),
+    path('api/', include("dictionary.api.urls")),
+    path('api/schema/swagger-ui/', SpectacularSwaggerView.as_view(url_name='schema'), name='swagger-ui'),
+    # Redoc UI:
+    path('api/schema/redoc/', SpectacularRedocView.as_view(url_name='schema'), name='redoc'),
 
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

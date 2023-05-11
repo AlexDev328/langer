@@ -1,17 +1,25 @@
 from django.contrib import admin
-from .models import Word, WordCard, WordCardProgress, Language, CardGroup, UserProfile
+
+from .models import Word, Card, CardProgress, Language, Deck
 
 # Register your models here.
 
 
 admin.site.register(Word)
-admin.site.register(WordCard)
+admin.site.register(Card)
 admin.site.register(Language)
 
 
-@admin.register(CardGroup)
-class CardGroupAdmin(admin.ModelAdmin):
+class MembershipInline(admin.TabularInline):
+    model = Deck.cards.through
+    extra = 0
+
+@admin.register(Deck)
+class DeckAdmin(admin.ModelAdmin):
     list_display = ('name', 'is_public')
 
+    inlines = [MembershipInline,]
 
-admin.site.register(WordCardProgress)
+
+
+admin.site.register(CardProgress)

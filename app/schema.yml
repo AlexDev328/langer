@@ -1,0 +1,1027 @@
+openapi: 3.0.3
+info:
+  title: ''
+  version: 0.0.0
+paths:
+  /api/auth/token/:
+    post:
+      operationId: auth_token_create
+      description: |-
+        Takes a set of user credentials and returns an access and refresh JSON web
+        token pair to prove the authentication of those credentials.
+      tags:
+      - auth
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TokenObtainPair'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/TokenObtainPair'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/TokenObtainPair'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TokenObtainPair'
+          description: ''
+  /api/auth/token_refresh/:
+    post:
+      operationId: auth_token_refresh_create
+      description: |-
+        Takes a refresh type JSON web token and returns an access type JSON web
+        token if the refresh token is valid.
+      tags:
+      - auth
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TokenRefresh'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/TokenRefresh'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/TokenRefresh'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TokenRefresh'
+          description: ''
+  /api/cards:
+    get:
+      operationId: cards_retrieve
+      description: Concrete view for listing a queryset or creating a model instance.
+      tags:
+      - cards
+      security:
+      - jwtAuth: []
+      - basicAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Card'
+          description: ''
+    post:
+      operationId: cards_create
+      description: Concrete view for listing a queryset or creating a model instance.
+      tags:
+      - cards
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Card'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Card'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Card'
+        required: true
+      security:
+      - jwtAuth: []
+      - basicAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Card'
+          description: ''
+  /api/cards/{id}:
+    get:
+      operationId: cards_retrieve_2
+      description: Concrete view for retrieving, updating or deleting a model instance.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - cards
+      security:
+      - jwtAuth: []
+      - basicAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Card'
+          description: ''
+    put:
+      operationId: cards_update
+      description: Concrete view for retrieving, updating or deleting a model instance.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - cards
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Card'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Card'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Card'
+        required: true
+      security:
+      - jwtAuth: []
+      - basicAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Card'
+          description: ''
+    patch:
+      operationId: cards_partial_update
+      description: Concrete view for retrieving, updating or deleting a model instance.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - cards
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedCard'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedCard'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedCard'
+      security:
+      - jwtAuth: []
+      - basicAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Card'
+          description: ''
+    delete:
+      operationId: cards_destroy
+      description: Concrete view for retrieving, updating or deleting a model instance.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - cards
+      security:
+      - jwtAuth: []
+      - basicAuth: []
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/decks:
+    get:
+      operationId: decks_retrieve
+      description: Concrete view for listing a queryset or creating a model instance.
+      tags:
+      - decks
+      security:
+      - jwtAuth: []
+      - basicAuth: []
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Deck'
+          description: ''
+    post:
+      operationId: decks_create
+      description: Concrete view for listing a queryset or creating a model instance.
+      tags:
+      - decks
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Deck'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Deck'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Deck'
+        required: true
+      security:
+      - jwtAuth: []
+      - basicAuth: []
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Deck'
+          description: ''
+  /api/decks/{deck_pk}/card/{id}:
+    get:
+      operationId: decks_card_retrieve
+      description: Concrete view for retrieving, updating or deleting a model instance.
+      parameters:
+      - in: path
+        name: deck_pk
+        schema:
+          type: integer
+        required: true
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - decks
+      security:
+      - jwtAuth: []
+      - basicAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Card'
+          description: ''
+    put:
+      operationId: decks_card_update
+      description: Concrete view for retrieving, updating or deleting a model instance.
+      parameters:
+      - in: path
+        name: deck_pk
+        schema:
+          type: integer
+        required: true
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - decks
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Card'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Card'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Card'
+        required: true
+      security:
+      - jwtAuth: []
+      - basicAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Card'
+          description: ''
+    patch:
+      operationId: decks_card_partial_update
+      description: Concrete view for retrieving, updating or deleting a model instance.
+      parameters:
+      - in: path
+        name: deck_pk
+        schema:
+          type: integer
+        required: true
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - decks
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedCard'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedCard'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedCard'
+      security:
+      - jwtAuth: []
+      - basicAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Card'
+          description: ''
+    delete:
+      operationId: decks_card_destroy
+      description: Concrete view for retrieving, updating or deleting a model instance.
+      parameters:
+      - in: path
+        name: deck_pk
+        schema:
+          type: integer
+        required: true
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - decks
+      security:
+      - jwtAuth: []
+      - basicAuth: []
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/decks/{id}:
+    get:
+      operationId: decks_retrieve_2
+      description: Concrete view for retrieving, updating or deleting a model instance.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - decks
+      security:
+      - jwtAuth: []
+      - basicAuth: []
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Deck'
+          description: ''
+    put:
+      operationId: decks_update
+      description: Concrete view for retrieving, updating or deleting a model instance.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - decks
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Deck'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Deck'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Deck'
+        required: true
+      security:
+      - jwtAuth: []
+      - basicAuth: []
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Deck'
+          description: ''
+    patch:
+      operationId: decks_partial_update
+      description: Concrete view for retrieving, updating or deleting a model instance.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - decks
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedDeck'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedDeck'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedDeck'
+      security:
+      - jwtAuth: []
+      - basicAuth: []
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Deck'
+          description: ''
+    delete:
+      operationId: decks_destroy
+      description: Concrete view for retrieving, updating or deleting a model instance.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - decks
+      security:
+      - jwtAuth: []
+      - basicAuth: []
+      - cookieAuth: []
+      - {}
+      responses:
+        '204':
+          description: No response body
+  /api/decks/{id}/card:
+    get:
+      operationId: decks_card_retrieve_2
+      description: Concrete view for listing a queryset or creating a model instance.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - decks
+      security:
+      - jwtAuth: []
+      - basicAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Card'
+          description: ''
+    post:
+      operationId: decks_card_create
+      description: Concrete view for listing a queryset or creating a model instance.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - decks
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Card'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Card'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Card'
+        required: true
+      security:
+      - jwtAuth: []
+      - basicAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Card'
+          description: ''
+  /api/decks/{id}/card/page:
+    get:
+      operationId: decks_card_page_retrieve
+      description: Concrete view for listing a queryset or creating a model instance.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - decks
+      security:
+      - jwtAuth: []
+      - basicAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Card'
+          description: ''
+    post:
+      operationId: decks_card_page_create
+      description: Concrete view for listing a queryset or creating a model instance.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - decks
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Card'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Card'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Card'
+        required: true
+      security:
+      - jwtAuth: []
+      - basicAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Card'
+          description: ''
+  /api/decks/{id}/expand:
+    put:
+      operationId: decks_expand_update
+      description: Concrete view for updating a model instance.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - decks
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DeckExpand'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/DeckExpand'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/DeckExpand'
+        required: true
+      security:
+      - jwtAuth: []
+      - basicAuth: []
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeckExpand'
+          description: ''
+    patch:
+      operationId: decks_expand_partial_update
+      description: Concrete view for updating a model instance.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - decks
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedDeckExpand'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedDeckExpand'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedDeckExpand'
+      security:
+      - jwtAuth: []
+      - basicAuth: []
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeckExpand'
+          description: ''
+  /api/languages:
+    get:
+      operationId: languages_retrieve
+      description: Concrete view for listing a queryset or creating a model instance.
+      tags:
+      - languages
+      security:
+      - jwtAuth: []
+      - basicAuth: []
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Language'
+          description: ''
+    post:
+      operationId: languages_create
+      description: Concrete view for listing a queryset or creating a model instance.
+      tags:
+      - languages
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Language'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Language'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Language'
+        required: true
+      security:
+      - jwtAuth: []
+      - basicAuth: []
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Language'
+          description: ''
+  /api/profile/me:
+    get:
+      operationId: profile_me_retrieve
+      tags:
+      - profile
+      security:
+      - jwtAuth: []
+      - basicAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserProfile'
+          description: ''
+  /api/words:
+    get:
+      operationId: words_retrieve
+      description: Concrete view for listing a queryset or creating a model instance.
+      tags:
+      - words
+      security:
+      - jwtAuth: []
+      - basicAuth: []
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Word'
+          description: ''
+    post:
+      operationId: words_create
+      description: Concrete view for listing a queryset or creating a model instance.
+      tags:
+      - words
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Word'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Word'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Word'
+        required: true
+      security:
+      - jwtAuth: []
+      - basicAuth: []
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Word'
+          description: ''
+components:
+  schemas:
+    Card:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        word:
+          $ref: '#/components/schemas/WordSerializerInternal'
+        translation:
+          $ref: '#/components/schemas/WordSerializerInternal'
+        score:
+          type: integer
+          readOnly: true
+        decks:
+          type: array
+          items:
+            type: integer
+        transcription:
+          type: string
+          nullable: true
+          title: Транскрипция
+          maxLength: 255
+        description:
+          type: string
+          nullable: true
+          title: Значение
+          maxLength: 300
+        example:
+          type: string
+          nullable: true
+          title: Пример использования
+          maxLength: 300
+      required:
+      - id
+      - score
+      - translation
+      - word
+    Deck:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        card_count:
+          type: integer
+          readOnly: true
+        card_learned:
+          type: integer
+          readOnly: true
+        language:
+          type: integer
+        name:
+          type: string
+          title: Группа
+          maxLength: 300
+      required:
+      - card_count
+      - card_learned
+      - id
+      - language
+      - name
+    DeckExpand:
+      type: object
+      properties:
+        cards:
+          type: array
+          items:
+            type: integer
+      required:
+      - cards
+    Language:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        name:
+          type: string
+          title: Название
+          maxLength: 50
+        flag_code:
+          type: string
+          nullable: true
+          title: Код
+          maxLength: 2
+        emoji:
+          type: string
+          nullable: true
+          title: Эмоджи (для фронта)
+          maxLength: 3
+      required:
+      - id
+      - name
+    PatchedCard:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        word:
+          $ref: '#/components/schemas/WordSerializerInternal'
+        translation:
+          $ref: '#/components/schemas/WordSerializerInternal'
+        score:
+          type: integer
+          readOnly: true
+        decks:
+          type: array
+          items:
+            type: integer
+        transcription:
+          type: string
+          nullable: true
+          title: Транскрипция
+          maxLength: 255
+        description:
+          type: string
+          nullable: true
+          title: Значение
+          maxLength: 300
+        example:
+          type: string
+          nullable: true
+          title: Пример использования
+          maxLength: 300
+    PatchedDeck:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        card_count:
+          type: integer
+          readOnly: true
+        card_learned:
+          type: integer
+          readOnly: true
+        language:
+          type: integer
+        name:
+          type: string
+          title: Группа
+          maxLength: 300
+    PatchedDeckExpand:
+      type: object
+      properties:
+        cards:
+          type: array
+          items:
+            type: integer
+    TokenObtainPair:
+      type: object
+      properties:
+        username:
+          type: string
+          writeOnly: true
+        password:
+          type: string
+          writeOnly: true
+        access:
+          type: string
+          readOnly: true
+        refresh:
+          type: string
+          readOnly: true
+      required:
+      - access
+      - password
+      - refresh
+      - username
+    TokenRefresh:
+      type: object
+      properties:
+        access:
+          type: string
+          readOnly: true
+        refresh:
+          type: string
+          writeOnly: true
+      required:
+      - access
+      - refresh
+    UserProfile:
+      type: object
+      properties:
+        user:
+          type: integer
+        default_language:
+          type: integer
+          nullable: true
+      required:
+      - user
+    Word:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        language:
+          $ref: '#/components/schemas/Language'
+        text:
+          type: string
+          title: Слово или фраза
+          maxLength: 150
+      required:
+      - id
+      - language
+      - text
+    WordSerializerInternal:
+      type: object
+      properties:
+        text:
+          type: string
+          title: Слово или фраза
+          maxLength: 150
+        language:
+          type: integer
+      required:
+      - language
+      - text
+  securitySchemes:
+    basicAuth:
+      type: http
+      scheme: basic
+    cookieAuth:
+      type: apiKey
+      in: cookie
+      name: sessionid
+    jwtAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

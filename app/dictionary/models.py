@@ -8,7 +8,7 @@ from userprofile.models import UserProfile
 class Language(models.Model):
     name = models.CharField('Название', max_length=50)
     flag_code = models.CharField('Код', max_length=2, null=True)
-    emoji = models.CharField('Эмоджи (для фронта)', max_length=3, null=True, blank=True)
+    emoji = models.CharField('Эмоджи (для фронта)', max_length=4, null=True, blank=True)
 
     def __str__(self):
         return self.name
@@ -34,37 +34,37 @@ class Word(models.Model):
     objects: models.Manager()
 
 
-class ManagerWordCard(models.Manager):
+class ManagerCard(models.Manager):
 
-    def get_training_set(self, language_id, user, size=5) -> list['WordCard']:
+    def get_training_set(self, language_id, user, size=5) -> list['Card']:
         cards = self.filter(Q(owner=user) | Q(used_by=user) & Q(word__language_id=language_id)).order_by('?')[:50]
-        cards_count = cards.count()
-        if cards_count < size:
-            size = cards_count
+        card_count = cards.count()
+        if card_count < size:
+            size = card_count
         cards = random.sample(list(cards), size)
         return cards
 
-    def get_wordcard_for_training(self, language_id, user, cardgroup_id=None) -> 'WordCard':
-        if cardgroup_id:
+    def get_card_for_training(self, language_id, user, deck_id=None) -> 'Card':
+        if deck_id:
             card = self.filter((Q(owner=user) | Q(used_by=user)) & Q(word__language_id=language_id) & Q(
-                card_groups=cardgroup_id)).order_by('?')[0]
+                decks=deck_id)).order_by('?')[0]
         else:
             card = self.filter(Q(owner=user) | Q(used_by=user) & Q(word__language_id=language_id)).order_by('?')[0]
         return card
 
-    def get_options_set(self, wordcard, user, size=5) -> list[str]:
+    def get_options_set(self, card, user, size=5) -> list[str]:
         cards = self.filter(
-            (Q(owner=user) | Q(used_by=user)) & Q(word__language_id=wordcard.word.language_id)).order_by(
+            (Q(owner=user) | Q(used_by=user)) & Q(word__language_id=card.word.language_id)).order_by(
             '?').values_list('translation__text', flat=True)
-        cards_count = cards.count()
-        if cards_count < size:
-            size = cards_count
+        card_count = cards.count()
+        if card_count < size:
+            size = card_count
         cards = random.sample(list(cards), size)
         return cards
 
 
-class WordCard(models.Model):
-    word = models.ForeignKey(Word, on_delete=models.CASCADE, verbose_name='слово или фраза', related_name='word_cards')
+class Card(models.Model):
+    word = models.ForeignKey(Word, on_delete=models.CASCADE, verbose_name='слово или фраза', related_name='cards')
     transcription = models.CharField('транскрипция', max_length=255, blank=True, null=True)
 
     translation = models.ForeignKey(Word, on_delete=models.CASCADE, verbose_name='перевод',
@@ -74,14 +74,14 @@ class WordCard(models.Model):
     # примеры использования
     example = models.CharField("пример использования", max_length=300, null=True, blank=True)
     owner = models.ForeignKey(UserProfile, on_delete=models.CASCADE, null=True, verbose_name='создатель',
-                              related_name='wordcards')
-    used_by = models.ManyToManyField(UserProfile, related_name='shared_wordcards', blank=True)
+                              related_name='cards')
+    used_by = models.ManyToManyField(UserProfile, related_name='shared_cards', blank=True)
     is_public = models.BooleanField('доступна всем', default=False)
-    card_groups = models.ManyToManyField('CardGroup', verbose_name='словарные группы', blank=True,
-                                         related_name='wordcards')
+    decks = models.ManyToManyField('Deck', verbose_name='словарные группы', blank=True,
+                                   related_name='cards')
 
     objects = models.Manager()
-    training = ManagerWordCard()
+    training = ManagerCard()
 
     def __str__(self):
         return f'{str(self.word)} - {str(self.translation)}'
@@ -91,42 +91,42 @@ class WordCard(models.Model):
         verbose_name_plural = 'карточки'
 
 
-class ManagerCardGroup(models.Manager):
-    def get_training_set(self, user, size=5) -> list[WordCard]:
-        cards = self.wordcards.filter(Q(owner=user) | Q(used_by=user)).order_by('?')[:50]
-        cards_count = cards.count()
-        if cards_count < size:
-            size = cards_count
+class ManagerDeck(models.Manager):
+    def get_training_set(self, user, size=5) -> list[Card]:
+        cards = self.cards.filter(Q(owner=user) | Q(used_by=user)).order_by('?')[:50]
+        card_count = cards.count()
+        if card_count < size:
+            size = card_count
         cards = random.sample(list(cards), size)
         return cards
 
 
-class CardGroup(models.Model):
+class Deck(models.Model):
     name = models.CharField('группа', max_length=300)
     language = models.ForeignKey(Language, on_delete=models.CASCADE, null=True, blank=False)
     owner = models.ForeignKey(UserProfile, on_delete=models.DO_NOTHING, verbose_name='создатель',
-                              related_name='card_groups')
-    used_by = models.ManyToManyField(UserProfile, related_name='shared_cardgroups', blank=True)
+                              related_name='decks')
+    used_by = models.ManyToManyField(UserProfile, related_name='shared_decks', blank=True)
     is_public = models.BooleanField('доступна всем', default=False)
 
     objects = models.Manager()
-    training = ManagerCardGroup()
+    training = ManagerDeck()
 
     @property
     def card_count(self):
-        return self.wordcards.count()
+        return self.cards.count()
 
     def __str__(self):
         return f"{self.name} "
 
     class Meta:
-        verbose_name = 'подборка'
-        verbose_name_plural = 'подборки'
+        verbose_name = 'колода'
+        verbose_name_plural = 'колоды'
 
 
-class WordCardProgress(models.Model):
+class CardProgress(models.Model):
     owner = models.ForeignKey(UserProfile, on_delete=models.CASCADE, null=True, blank=True)
-    card = models.ForeignKey(WordCard, on_delete=models.CASCADE, verbose_name='карточка')
+    card = models.ForeignKey(Card, on_delete=models.CASCADE, verbose_name='карточка')
     score = models.IntegerField('знание словарной карточки (0..10)', default=0)
 
     objects: models.Manager()

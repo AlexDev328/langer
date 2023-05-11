@@ -1,7 +1,7 @@
 from rest_framework import serializers
 
 
-class WordCardTrainingSerializer(serializers.Serializer):
+class CardTrainingSerializer(serializers.Serializer):
     id = serializers.IntegerField(allow_null=True, required=False)
     type = serializers.CharField(allow_null=True, required=False)
     word = serializers.CharField()

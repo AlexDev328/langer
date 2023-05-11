@@ -18,7 +18,6 @@ services:
       - db
     networks:
       - langer-prod
-      - external-bridge
 
 
   front:
@@ -28,10 +27,7 @@ services:
       - static_volume:/usr/src/app/staticfiles/
       - media_volume:/usr/src/app/mediafiles/
     networks:
-      - external-bridge
       - langer-prod
-
-
     ports:
       - "80:80"
 
@@ -45,7 +41,6 @@ services:
     env_file:
       - ./.env.prod.db
     networks:
-      - external-bridge
       - langer-prod
 
 
@@ -65,7 +60,6 @@ services:
     restart: unless-stopped
 
     networks:
-      - external-bridge
       - langer-prod
 
 
@@ -77,16 +71,3 @@ volumes:
 
 networks:
   langer-prod:
-  external-bridge:
-
-
-#  nginx:
-#    restart: always
-#    build: ./nginx
-#    volumes:
-#      - static_volume:/usr/src/app/staticfiles/
-#      - media_volume:/usr/src/app/mediafiles/
-#    ports:
-#      - 1337:80
-#    depends_on:
-#      - web

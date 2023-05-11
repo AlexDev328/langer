@@ -1,17 +1,16 @@
 from rest_framework import generics
 from rest_framework.response import Response
 
-from dictionary.models import WordCard
-from trainings.api.test_serializer import WordCardTrainingSerializer
+from dictionary.models import Card
+from trainings.api.test_serializer import CardTrainingSerializer
 
 
-class WordCardsTrainingApiView(generics.RetrieveUpdateAPIView):
-    serializer_class = WordCardTrainingSerializer
+class CardsTrainingApiView(generics.RetrieveUpdateAPIView):
+    serializer_class = CardTrainingSerializer
 
     def get(self, request, *args, **kwargs):
         print(request)
-        word = WordCard.objects.get_random_words(user_id=request.user.id, language_id=2, count=1)[0]
-        options = WordCard.objects.get_options_for_wordcard(user_id=request.user.id, wordcard=word,
-                                                            count=3)
-        serializer = WordCardTrainingSerializer({'word': word.word.text, 'options': [*options, word.translation.text]})
+        word = Card.objects.get_random_words(user_id=request.user.id, language_id=2, count=1)[0]
+        options = Card.objects.get_options_for_card(user_id=request.user.id, card=word, count=3)
+        serializer = CardTrainingSerializer({'word': word.word.text, 'options': [*options, word.translation.text]})
         return Response(serializer.data)

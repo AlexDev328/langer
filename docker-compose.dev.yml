@@ -1,0 +1,61 @@
+version: '3.9'
+
+services:
+  web:
+    container_name: langer
+    build:
+      context: ./app
+      dockerfile: Dockerfile
+    command: python manage.py runserver 0.0.0.0:8000
+    volumes:
+      - static_volume:/usr/src/app/staticfiles/
+      - media_volume:/usr/src/app/mediafiles/
+      - ./app/:/usr/src/app/
+    ports:
+      - "8000:8000"
+    env_file:
+      - ./.env.dev
+    depends_on:
+      - db
+    networks:
+      - langer-dev
+
+
+  db:
+    image: postgres:14-alpine
+
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    env_file:
+      - ./.env.dev.db
+    networks:
+      - langer-dev
+
+
+
+  pgadmin:
+    user: root
+    container_name: pgadmin_container_langer
+    image: dpage/pgadmin4
+    env_file:
+      - ./.env.dev.db
+
+
+    volumes:
+      - pgadmin-data:/var/lib/pgadmin
+    ports:
+      - "5050:5050"
+    restart: unless-stopped
+    networks:
+      - langer-dev
+
+
+
+volumes:
+  postgres_data:
+  static_volume:
+  media_volume:
+  pgadmin-data:
+
+networks:
+  langer-dev:

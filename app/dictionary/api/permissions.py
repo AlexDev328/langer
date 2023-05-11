@@ -1,18 +1,18 @@
 from rest_framework.permissions import BasePermission
 
 
-class CanAddCardToGroup(BasePermission):
+class CanAddCardToDeck(BasePermission):
     """
     Permission class to check if a user can add a card to a group.
     """
 
     def has_permission(self, request, view):
-        card_groups = request.data.get('card_groups')
-        if not card_groups:
+        decks = request.data.get('decks')
+        if not decks:
             return True
-        user_groups = request.user.userprofile.card_groups.values_list('name', flat=True)
-        for group_id in card_groups:
-            if not user_groups.filter(pk=group_id).exists():
+        user_decks = request.user.userprofile.decks.values_list('id', flat=True)
+        for deck_id in decks:
+            if not user_decks.filter(pk=deck_id).exists():
                 return False
         return True
 

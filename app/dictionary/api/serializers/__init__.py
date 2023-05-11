@@ -1,4 +1,4 @@
-from .card_groups import *
-from .languages import *
-from .worcards import *
+from .deck import *
+from .language import *
+from .card import *
 from .word import *
